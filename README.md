@@ -119,17 +119,21 @@ assets/js/app.js            datalist 同步、事件委派、啟動流程
 
 ### 打包
 
-用 `git archive`，不要用 `Compress-Archive`：後者不看 `.gitignore`，會把真實的 `quotation_database.json`（客戶名單、定價、歷史單據、流水號）連同 `.git/` 一起帶出去。
+發佈物只該含**已追蹤**的檔案。`git archive <tag>` 輸出的是該 tag 的 tree，天然不帶未追蹤檔案、不帶 `.git/`、也不帶版控歷史——這才是它優於 `Compress-Archive` 的理由。
+
+⚠️ 別把安全寄託在 `.gitignore` 上。`git archive` **根本不查** `.gitignore`；真正的保證是「該檔從未進過版控」。`.gitignore` 只是防止手滑 `git add -A` 時把真實資料收錄進去的一道副線。
 
 ```
-git -c core.autocrlf=false -c core.eol=lf archive v0.3.0 --format=zip -o quotation-v0.3.0.zip
+git -c core.autocrlf=false -c core.eol=lf archive v0.3.0 --format=zip -o ..\quotation-v0.3.0.zip
 ```
+
+`-o` 的路徑請落在 repo **外**（上例的 `..\`）。輸出到 repo 根目錄的話，那個 zip 就成了未追蹤檔案，下一次 `git add -A` 連發行物一起收進歷史。
 
 `-c core.autocrlf=false -c core.eol=lf` 是必要的：`git archive` 會套用與 checkout 相同的 EOL 轉換，在 Windows 預設設定下輸出的是一份 CRLF 副本。功能上沒差別，但這樣發佈物就**不是**你剛驗證過的那份位元組。不加這兩條就先用 `Compare-Object` 或逐檔 `diff` 確認差異僅止於 EOL。
 
 zip 內容應為 `quotation.html`、`assets/`（CSS + 10 支 JS）、`LICENSE`、`README.md`、`quotation_database.example.json`，可選 `.gitignore` / `.gitattributes`。
 
-> ⚠️ **`.git/` 绝对不能交付，也不能公開這個 repo 的歷史。** `quotation_database.json` 曾在 `d38789d` 進過版控、到 `bf768ce` 才移出——移除的 commit 只是刪除索引，舊 blob 仍在歷史裡。任何人拿到 `.git`（或 clone 公開 repo）就能取出當時完整的客戶名單與定價。`git archive <tag>` 只輸出該 tag 的 tree，天然不带歷史，這就是優先用它而非 `Compress-Archive` 的第二個理由。若日後要把 repo 變公開，需先以 `git filter-repo` 或 BFG 徹底清除該路徑，並視同已外洩處理。
+> ⚠️ **`.git/` 不得交付；本 repo 的歷史未清除前不得公開。** 版控歷史中曾出現真實報價資料，而移除它的 commit 只刪了索引——**舊 blob 仍在歷史裡**。任何人拿到 `.git` 或把它 clone 走公開 repo，都能取出當時的內容。`git archive <tag>` 只輸出該 tag 的 tree，天然不帶歷史。若日後必須把 repo 公開，先用 `git filter-repo` 或 BFG 重整歷史，並一律**視同已外洩**處理。
 
 **不要 minify 或 bundle**：未壓縮的原始碼本身就是對應來源，一旦壓縮過就必須同批再附一份未打包版（§6）。
 

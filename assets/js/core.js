@@ -43,6 +43,10 @@ const STORAGE_KEYS = {
    global scope 下會讓整個 app 載入失敗。 */
 const SAVE_DEBOUNCE_MS = 400;
 
+/* 單號留空時存進歷史紀錄的哨兵值。invoice.js 寫入、report.js 判讀，兩端必須
+   共用同一個常數：它曾被直接拿去當去重鍵，字串一改錯就會靜默合併多張單據。 */
+const NO_INVOICE_NO = '無單號';
+
 let globalFileHandle = null;
 let rememberedHandle = null;
 let lastFileData = null;

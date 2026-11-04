@@ -71,8 +71,8 @@ function getPaperKind() {
     return normalizePaperKind(getSettings()[PAPER_SETTING_KEY]);
 }
 
-function getPaperPreset(kind) {
-    return PAPER_PRESETS[normalizePaperKind(kind || getPaperKind())];
+function getPaperPreset() {
+    return PAPER_PRESETS[normalizePaperKind(getPaperKind())];
 }
 
 function isThermalPaper() {
@@ -180,6 +180,19 @@ function receiptItem(item) {
     return html;
 }
 
+/* 合計的金額呈現。A4 報表、熱感報表、熱感單據三個建置者共用同一份，
+   避免其中一版偷偷多了「元整」而兩版各說各話。 */
+function totalAmountText(total) {
+    return 'NT$ ' + formatMoney(total);
+}
+
+/* 熱感兩版（單據／統計報表）共用的合計段：金額列＋國字大寫列。
+   國字大寫只出現在這一行，所以 totalAmountText() 不再附「元整」。 */
+function thermalTotalFooterHtml(label, total) {
+    return receiptRow(label, totalAmountText(total), 'rc-total') +
+        `<div class="rc-cn">${esc(numberToChineseCurrency(total))}</div>`;
+}
+
 /* 目前畫面上的單據 → 熱感紙（10cm／8cm）用的直列式收據 */
 function buildInvoiceThermalHtml(state) {
     let brandEl = document.querySelector('.buyer-brand');
@@ -219,8 +232,7 @@ function buildInvoiceThermalHtml(state) {
         (items.length > 0 ? items.map(receiptItem).join('') : '<div class="rc-empty">無品項</div>') +
         '</div>' +
         '<div class="rc-rule"></div>' +
-        receiptRow('合計', 'NT$ ' + formatMoney(total), 'rc-total') +
-        `<div class="rc-cn">${esc(numberToChineseCurrency(total))}</div>` +
+        thermalTotalFooterHtml('合計', total) +
         '<div class="rc-sign">顧客簽章 ＿＿＿＿＿＿＿＿＿＿</div>' +
         '</div>';
     return html;

@@ -266,7 +266,7 @@ function saveToHistory() {
         id: 'INV_' + Date.now(),
         dateStr: state.invoiceDate || '未指定日期',
         buyer: state.buyer || '未指定買受人',
-        invoiceNo: state.invoiceNo || '無單號',
+        invoiceNo: state.invoiceNo || NO_INVOICE_NO,
         total: document.getElementById('grandTotal').textContent,
         data: state
     });

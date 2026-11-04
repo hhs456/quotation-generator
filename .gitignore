@@ -1,7 +1,15 @@
 # 實際使用的報價資料庫。內容是店家的營業資料（客戶名單、定價、
 # 歷史報價），不屬程式碼授權範圍，不應進版控。
-# 格式範例見 quotation_database.example.json
-quotation_database.json
+#
+# 注意：真正的保證是「從未進過版控」，不是這行規則——git archive 不查
+# .gitignore，而刪除 commit 清不掉舊 blob。這組規則只是在手滑 git add -A
+# 時多一道防線。存檔對話框允許任意檔名與位置，所以用前綴比對蓋住所有變體，
+# 且刻意不錨定目錄層級（assets/ 底下也可能被存進去），再單獨放行格式範例。
+quotation_database*.json
+!quotation_database.example.json
+
+# 發行 zip 必須輸出到 repo 外；留在 repo 內會被下一次的 git add -A 收進歷史
+*.zip
 
 # 作業系統與編輯器產生
 .DS_Store

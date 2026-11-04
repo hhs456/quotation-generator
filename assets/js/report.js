@@ -77,8 +77,12 @@ function computeCustomerReport(clientName, from, to) {
         if (buyer !== clientName) return;
 
         /* 同一張單被存兩次（連按兩下、或載入後重存）只能算一次業績。
-           歷史列表是新單在前，所以保留先出現的那一筆；沒有單號的紀錄各自成單，不去重。 */
+           歷史列表是新單在前，所以保留先出現的那一筆；沒有單號的紀錄各自成單，不去重。
+           注意 saveToHistory() 把空單號寫成 NO_INVOICE_NO 哨兵值，所以 rec.invoiceNo
+           恆非空——必須先還原成空字串，否則同一客戶的所有空單號單據會共用
+           同一個哨兵鍵被合併掉，從各段彙整靜默消失。 */
         let invoiceNo = String(rec.invoiceNo || data.invoiceNo || '').trim();
+        if (invoiceNo === NO_INVOICE_NO) invoiceNo = '';
         let dedupeKey = invoiceNo || '\u0000anon:' + (++anonymousSeq);
         if (seenInvoiceNos.has(dedupeKey)) {
             duplicated++;
@@ -90,7 +94,7 @@ function computeCustomerReport(clientName, from, to) {
         let date = parseDateLabel(dateLabel);
         if (!date) {
             undated.push({
-                invoiceNo: invoiceNo || '無單號',
+                invoiceNo: invoiceNo || NO_INVOICE_NO,
                 dateLabel: dateLabel || '未填日期'
             });
             return;
@@ -109,13 +113,12 @@ function computeCustomerReport(clientName, from, to) {
                 name: name || '(未填品名)',
                 unit: String(item.unit || '').trim(),
                 qty: parseFloat(item.qty),
-                price: parseFloat(item.price),
                 amount: amount
             });
         });
         invoices.push({
             date: date,
-            invoiceNo: invoiceNo || '無單號',
+            invoiceNo: invoiceNo || NO_INVOICE_NO,
             lines: lines,
             amount: lines.reduce((sum, line) => sum + line.amount, 0)
         });
@@ -127,7 +130,7 @@ function computeCustomerReport(clientName, from, to) {
     let monthMap = new Map();
     invoices.forEach(inv => {
         let key = monthKey(inv.date);
-        if (!monthMap.has(key)) monthMap.set(key, { key: key, date: inv.date, count: 0, amount: 0 });
+        if (!monthMap.has(key)) monthMap.set(key, { key: key, count: 0, amount: 0 });
         let month = monthMap.get(key);
         month.count += 1;
         month.amount += inv.amount;
@@ -249,7 +252,7 @@ function buildReportA4Html(report) {
 
     html += reportNotesHtml(report) +
         '<div class="rp-total">' +
-        `<span>期間合計：NT$ ${formatMoney(report.total)} 元整</span>` +
+        `<span>期間合計：${totalAmountText(report.total)}</span>` +
         `<span class="rp-total-cn">${esc(numberToChineseCurrency(report.total))}</span>` +
         '</div>' +
         '</div>';
@@ -300,8 +303,7 @@ function buildReportThermalHtml(report) {
     });
 
     html += '<div class="rc-rule"></div>' +
-        receiptRow('期間合計', 'NT$ ' + formatMoney(report.total), 'rc-total') +
-        `<div class="rc-cn">${esc(numberToChineseCurrency(report.total))}</div>` +
+        thermalTotalFooterHtml('期間合計', report.total) +
         reportNotesThermalHtml(report) +
         '</div>';
     return html;
