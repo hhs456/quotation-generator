@@ -183,6 +183,11 @@ function bindStaticButtons() {
         shopName.value = setShopName(shopName.value);
     });
 
+    let signature = document.getElementById('signatureToggle');
+    if (signature) signature.addEventListener('change', function () {
+        signature.checked = setShowSignature(signature.checked);
+    });
+
     let reportClient = document.getElementById('reportClientSelect');
     if (reportClient) reportClient.addEventListener('change', renderReport);
     ['reportFrom', 'reportTo'].forEach(id => {

@@ -24,6 +24,7 @@
    ========================================================================== */
 
 const PAPER_SETTING_KEY = 'printPaper';
+const SIGNATURE_SETTING_KEY = 'showSignature';
 
 /*
  * A4 的 page / margin 刻意留空：沿用瀏覽器既有預設，避免改了這個功能
@@ -77,6 +78,23 @@ function getPaperPreset() {
 
 function isThermalPaper() {
     return getPaperPreset().thermal;
+}
+
+/*
+ * 熱感單據底部要不要印「顧客簽章」欄。與店家名稱同樣是三態：
+ * 未設定過（key 不存在）→ 用發行預設 SHOW_SIGNATURE；
+ * 設定過 → 照使用者選擇，false 是「刻意不要」而不是「還沒填」。
+ * 只影響熱感單據：A4 列印與統計報表本來就沒有簽章欄。
+ */
+function getShowSignature() {
+    let saved = getSettings();
+    if (!Object.prototype.hasOwnProperty.call(saved, SIGNATURE_SETTING_KEY)) return SHOW_SIGNATURE === true;
+    return saved[SIGNATURE_SETTING_KEY] === true;
+}
+
+function setShowSignature(on) {
+    setSetting(SIGNATURE_SETTING_KEY, on === true);
+    return getShowSignature();
 }
 
 function setPaperKind(kind) {
@@ -233,7 +251,7 @@ function buildInvoiceThermalHtml(state) {
         '</div>' +
         '<div class="rc-rule"></div>' +
         thermalTotalFooterHtml('合計', total) +
-        '<div class="rc-sign">顧客簽章 ＿＿＿＿＿＿＿＿＿＿</div>' +
+        (getShowSignature() ? '<div class="rc-sign">顧客簽章 ＿＿＿＿＿＿＿＿＿＿</div>' : '') +
         '</div>';
     return html;
 }

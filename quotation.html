@@ -88,7 +88,7 @@
         <button type="button" id="openHistoryBtn" class="btn-secondary">📂 歷史單據</button>
         <button type="button" id="openMemoryBtn" class="btn-danger">⚙️ 商品管理</button>
         <button type="button" id="openClientBtn" class="btn-purple">👥 客戶管理</button>
-        <button type="button" id="openReportBtn" class="btn-secondary">📊 客戶統計</button>
+        <button type="button" id="openReportBtn" class="btn-secondary">📊 購貨統計</button>
         <label class="paper-picker">
             <span>紙張</span>
             <select id="paperSelect" class="paper-select"></select>
@@ -132,6 +132,12 @@
             <input type="text" id="shopNameInput" placeholder="輸入你的店家名稱（留空則不顯示）" style="flex: 1;">
         </div>
         <p class="hint-text">顯示在熱感單據、統計報表與 A4 列印頁首。<strong>留空並離開欄位</strong>即不顯示店家名稱，單據只印「估 價 單」。此設定只存本機瀏覽器，不會寫入 JSON 檔案。</p>
+
+        <h4 class="section-title-red">顧客簽章欄</h4>
+        <div class="add-memory-box">
+            <label class="toggle-label"><input type="checkbox" id="signatureToggle"> 在熱感單據底部印出「顧客簽章 ＿＿＿＿」</label>
+        </div>
+        <p class="hint-text"><strong>預設關閉</strong>。勾選後只影響<strong>熱感單據</strong>（10cm／8cm）；A4 列印與統計報表本來就沒有簽章欄，不受此設定影響。此設定只存本機瀏覽器，不會寫入 JSON 檔案。</p>
 
         <hr class="divider">
 

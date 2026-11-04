@@ -262,6 +262,13 @@ button:hover {
 .add-memory-box button {
     flex-shrink: 0;
 }
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
 .add-memory-box-client {
     border-color: #8e44ad;
     background-color: #f9f4fc;
@@ -423,7 +430,7 @@ button:hover {
     }
 }
 
-/* ========================= 紙張選擇與客戶統計（螢幕） ========================= */
+/* ========================= 紙張選擇與購貨統計（螢幕） ========================= */
 .paper-picker {
     display: flex;
     align-items: center;

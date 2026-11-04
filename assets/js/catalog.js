@@ -26,6 +26,8 @@
 function openMemoryModal() {
     let shopInput = document.getElementById('shopNameInput');
     if (shopInput) shopInput.value = getShopName();
+    let signatureInput = document.getElementById('signatureToggle');
+    if (signatureInput) signatureInput.checked = getShowSignature();
     renderUnitManager();
     renderProductManager();
     document.getElementById('memoryModal').style.display = 'flex';

@@ -39,8 +39,8 @@ const STORAGE_KEYS = {
 };
 
 /* 品牌與預設值（APP_NAME / SHOP_NAME / DEFAULT_UNITS / DEFAULT_PRODUCTS /
-   SEQ_BASE）一律在 branding.js 宣告，本檔不得重複宣告，否則串在同一
-   global scope 下會讓整個 app 載入失敗。 */
+   SEQ_BASE / SHOW_SIGNATURE）一律在 branding.js 宣告，本檔不得重複宣告，
+   否則串在同一 global scope 下會讓整個 app 載入失敗。 */
 const SAVE_DEBOUNCE_MS = 400;
 
 /* 單號留空時存進歷史紀錄的哨兵值。invoice.js 寫入、report.js 判讀，兩端必須
