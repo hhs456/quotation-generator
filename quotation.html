@@ -22,6 +22,7 @@
     -->
     <title>大毛小毛火鍋料－估價單產生器</title>
     <link rel="stylesheet" href="assets/quotation.css">
+    <style id="pageSizeStyle"></style>
 </head>
 <body>
 
@@ -87,6 +88,11 @@
         <button type="button" id="openHistoryBtn" class="btn-secondary">📂 歷史單據</button>
         <button type="button" id="openMemoryBtn" class="btn-danger">⚙️ 商品管理</button>
         <button type="button" id="openClientBtn" class="btn-purple">👥 客戶管理</button>
+        <button type="button" id="openReportBtn" class="btn-secondary">📊 客戶統計</button>
+        <label class="paper-picker">
+            <span>紙張</span>
+            <select id="paperSelect" class="paper-select"></select>
+        </label>
         <button type="button" id="printBtn" class="btn-dark">🖨️ 列印單據</button>
     </div>
 
@@ -119,7 +125,15 @@
 <!-- 商品管理彈跳視窗 -->
 <div id="memoryModal" class="modal no-print">
     <div class="modal-content">
-        <h3>商品管理與單位設定</h3>
+        <h3>商品管理與店家設定</h3>
+
+        <h4 class="section-title-red">店家名稱</h4>
+        <div class="add-memory-box">
+            <input type="text" id="shopNameInput" placeholder="例如：大毛小毛火鍋料" style="flex: 1;">
+        </div>
+        <p class="hint-text">顯示在熱感單據、統計報表與 A4 列印頁首。<strong>留空並離開欄位</strong>即不顯示店家名稱，單據只印「估 價 單」。此設定只存本機瀏覽器，不會寫入 JSON 檔案。</p>
+
+        <hr class="divider">
 
         <h4 class="section-title-red">單位管理</h4>
         <div class="add-memory-box">
@@ -205,6 +219,49 @@
     </div>
 </div>
 
+<!-- 客戶購貨統計彈跳視窗 -->
+<div id="reportModal" class="modal no-print">
+    <div class="modal-content modal-content-report">
+        <h3>📊 客戶購貨統計</h3>
+        <p class="hint-text">統計來源為「歷史單據」（需先按 💾 儲存單據）。預設為本月，可改用快捷期間或自訂起訖日。</p>
+
+        <div class="report-controls">
+            <div class="flex-row">
+                <label class="label-bold">客戶：</label>
+                <select id="reportClientSelect" class="modal-select"></select>
+            </div>
+            <div class="flex-row">
+                <label class="label-bold">期間：</label>
+                <input type="date" id="reportFrom">
+                <span>至</span>
+                <input type="date" id="reportTo">
+            </div>
+            <div class="flex-row">
+                <label class="label-bold">紙張：</label>
+                <select id="reportPaperSelect" class="paper-select report-paper-select"></select>
+                <span class="hint-text">影響下方預覽與「列印報表」的版型</span>
+            </div>
+            <div id="reportPresets" class="flex-wrap-gap">
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="month">本月</button>
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="prevMonth">上月</button>
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="quarter">本季</button>
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="year">今年</button>
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="all">全部</button>
+            </div>
+        </div>
+
+        <div id="reportResult" class="report-result"></div>
+
+        <div class="modal-footer">
+            <button type="button" id="printReportBtn" class="btn-dark btn-sm">🖨️ 列印報表</button>
+            <button type="button" class="btn-secondary" data-action="close-modal" data-target="reportModal">關閉視窗</button>
+        </div>
+    </div>
+</div>
+
+<!-- 列印專用輸出（熱感單據 / 統計報表），畫面上恆隱藏 -->
+<div id="printDoc" aria-hidden="true"></div>
+
 <!-- 自動完成資料清單 -->
 <datalist id="productList"></datalist>
 <datalist id="unitList"></datalist>
@@ -216,6 +273,8 @@
 <script src="assets/js/invoice.js"></script>
 <script src="assets/js/catalog.js"></script>
 <script src="assets/js/clients.js"></script>
+<script src="assets/js/paper.js"></script>
+<script src="assets/js/report.js"></script>
 <script src="assets/js/app.js"></script>
 
 </body>

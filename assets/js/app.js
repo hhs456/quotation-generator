@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    app.js — datalist 同步、事件綁定、啟動流程
-   載入順序第 7 棒（最後）：依賴前面所有檔。
+   載入順序第 9 棒（最後）：依賴前面所有檔。
    ========================================================================== */
 
 function updateUnitDatalist() {
@@ -115,6 +115,7 @@ const DELEGATED_CLICKS = {
     'delete-product': btn => deleteMemoryItem(btn.dataset.name),
     'delete-client-price': btn => deleteClientCustomPrice(btn.dataset.client, btn.dataset.product),
     'delete-client': () => deleteClient(getClientSelectValue()),
+    'report-preset': btn => applyReportPreset(btn.dataset.preset),
     'close-modal': btn => {
         let target = btn.dataset.target;
         if (target === 'memoryModal') closeMemoryModal();
@@ -157,6 +158,8 @@ const STATIC_BINDINGS = {
     openHistoryBtn: openHistoryModal,
     openMemoryBtn: openMemoryModal,
     openClientBtn: openClientModal,
+    openReportBtn: openReportModal,
+    printReportBtn: printReport,
     printBtn: validateAndPrint,
     addUnitBtn: addNewUnit,
     addProductBtn: addNewMemoryItem,
@@ -174,6 +177,22 @@ function bindStaticButtons() {
 
     let select = document.getElementById('selectedClientSelect');
     if (select) select.addEventListener('change', renderClientPricingTable);
+
+    let shopName = document.getElementById('shopNameInput');
+    if (shopName) shopName.addEventListener('change', function () {
+        shopName.value = setShopName(shopName.value);
+    });
+
+    let reportClient = document.getElementById('reportClientSelect');
+    if (reportClient) reportClient.addEventListener('change', renderReport);
+    ['reportFrom', 'reportTo'].forEach(id => {
+        let el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', function () {
+            markReportPreset('');
+            renderReport();
+        });
+    });
 
     ['buyer', 'invoiceNo', 'invoiceDate'].forEach(id => {
         let el = document.getElementById(id);
@@ -228,6 +247,8 @@ window.addEventListener('DOMContentLoaded', async function () {
     bindStaticButtons();
     if (!validateStoreMapping()) return;
     initCompatNotice();
+    initPaperSelectors();
+    applyDocumentTitle();
     getClientsDB();
     updateUnitDatalist();
     updateDatalist();

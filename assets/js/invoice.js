@@ -21,7 +21,8 @@
 /* ==========================================================================
    invoice.js — 單據列、總計、驗證、列印、流水單號、歷史單據
    載入順序第 4 棒：依賴 core.js、currency.js、store.js；
-   執行期會呼叫 app.js 的 updateDatalist() / updateClientDatalist() / onBuyerChange()。
+   執行期會呼叫 app.js 的 updateDatalist() / updateClientDatalist() / onBuyerChange()，
+   以及 paper.js 的 isThermalPaper() / printHtml() / buildInvoiceThermalHtml()。
    ========================================================================== */
 
 function collectState() {
@@ -243,7 +244,11 @@ function validateAndPrint() {
     }
     commitInvoiceSeq(getElementText('invoiceNo'));
     flushSave();
-    window.print();
+    if (isThermalPaper()) {
+        printHtml(buildInvoiceThermalHtml(collectState()));
+    } else {
+        window.print();
+    }
 }
 
 /* ------------------------------ 歷史單據 ------------------------------ */

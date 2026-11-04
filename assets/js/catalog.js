@@ -24,6 +24,8 @@
    ========================================================================== */
 
 function openMemoryModal() {
+    let shopInput = document.getElementById('shopNameInput');
+    if (shopInput) shopInput.value = getShopName();
     renderUnitManager();
     renderProductManager();
     document.getElementById('memoryModal').style.display = 'flex';
