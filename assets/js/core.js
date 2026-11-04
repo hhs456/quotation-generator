@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 常量、純工具、儲存層讀寫、IndexedDB handle 記憶
+ * 估價單產生器 — 常量、純工具、儲存層讀寫、IndexedDB handle 記憶
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,8 @@
 
 /* ==========================================================================
    core.js — 常量、純工具、儲存層讀寫、IndexedDB handle 記憶
-   載入順序第 1 棒：不依賴其他檔。
+   載入順序第 2 棒：只依賴 branding.js（APP_NAME / SHOP_NAME /
+   DEFAULT_UNITS / DEFAULT_PRODUCTS / SEQ_BASE 在那一支宣告，本檔不重複宣告）。
    ========================================================================== */
 
 const APP_VERSION = '0.3.0';
@@ -37,11 +38,10 @@ const STORAGE_KEYS = {
     settings: 'quotation_settings_v1'
 };
 
-const DEFAULT_UNITS = ['斤', '包', '個', '箱', '盒', '台斤', '公斤'];
-const DEFAULT_PRODUCTS = { '凍豆腐': { price: 42, unit: '斤' } };
-const SEQ_BASE = 4183;
+/* 品牌與預設值（APP_NAME / SHOP_NAME / DEFAULT_UNITS / DEFAULT_PRODUCTS /
+   SEQ_BASE）一律在 branding.js 宣告，本檔不得重複宣告，否則串在同一
+   global scope 下會讓整個 app 載入失敗。 */
 const SAVE_DEBOUNCE_MS = 400;
-const SHOP_NAME = '大毛小毛火鍋料';
 
 let globalFileHandle = null;
 let rememberedHandle = null;
@@ -223,7 +223,7 @@ function setShopName(name) {
 /* 店家名稱也是 A4 列印頁首唯一的店名來源（來自 <title>），所以要同步文件標題 */
 function applyDocumentTitle() {
     let shop = getShopName();
-    document.title = (shop ? shop + '－' : '') + '估價單產生器';
+    document.title = (shop ? shop + '－' : '') + APP_NAME;
 }
 
 /* --------------------------- localStorage 讀寫 --------------------------- */

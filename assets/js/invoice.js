@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 單據列、總計、驗證、列印、流水單號、歷史單據
+ * 估價單產生器 — 單據列、總計、驗證、列印、流水單號、歷史單據
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    invoice.js — 單據列、總計、驗證、列印、流水單號、歷史單據
-   載入順序第 4 棒：依賴 core.js、currency.js、store.js；
+   載入順序第 5 棒：依賴 core.js、currency.js、store.js；
    執行期會呼叫 app.js 的 updateDatalist() / updateClientDatalist() / onBuyerChange()，
    以及 paper.js 的 isThermalPaper() / printHtml() / buildInvoiceThermalHtml()。
    ========================================================================== */
@@ -42,7 +42,7 @@ function collectState() {
             state.items.push({
                 name: nameInput.value,
                 qty: qtyInput ? qtyInput.value : '',
-                unit: unitSpan ? unitSpan.textContent : '斤',
+                unit: unitSpan ? unitSpan.textContent : DEFAULT_UNITS[0],
                 price: priceInput ? priceInput.value : '',
                 remark: remarkInput ? remarkInput.value : ''
             });
@@ -66,7 +66,7 @@ function addRow(data = null) {
         let db = getProductDB();
         if (db[nameVal]) unitVal = db[nameVal].unit;
     }
-    if (!unitVal) unitVal = '斤';
+    if (!unitVal) unitVal = DEFAULT_UNITS[0];
     if (nameVal && (priceVal === '' || priceVal === undefined || priceVal === null)) {
         let resolved = getProductPriceForClient(nameVal, getElementText('buyer').trim());
         if (resolved) priceVal = resolved;

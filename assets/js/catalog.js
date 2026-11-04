@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 單位與商品基本資料庫的管理彈窗
+ * 估價單產生器 — 單位與商品基本資料庫的管理彈窗
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    catalog.js — 單位與商品基本資料庫的管理彈窗
-   載入順序第 5 棒：依賴 core.js；執行期會呼叫 store.js / app.js 的函式。
+   載入順序第 6 棒：依賴 core.js；執行期會呼叫 store.js / app.js 的函式。
    ========================================================================== */
 
 function openMemoryModal() {
@@ -115,7 +115,7 @@ function addNewMemoryItem() {
         nameInput.focus();
         return;
     }
-    let unit = unitInput.value.trim() || '斤';
+    let unit = unitInput.value.trim() || DEFAULT_UNITS[0];
     let price = parseFloat(priceInput.value);
     if (isNaN(price) || price < 0) price = 0;
 

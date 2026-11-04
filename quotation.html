@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!--
-        大毛小毛火鍋料估價單產生器 — 頁面結構
+        估價單產生器 — 頁面結構
         Copyright (C) 2026 Hanson
 
         This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
         License along with this program.  If not, see
         <http://www.gnu.org/licenses/>.
     -->
-    <title>大毛小毛火鍋料－估價單產生器</title>
+    <title>估價單產生器</title>
     <link rel="stylesheet" href="assets/quotation.css">
     <style id="pageSizeStyle"></style>
 </head>
@@ -47,7 +47,7 @@
     <div class="header-info">
         <div>
             <label>買受人：</label>
-            <input type="text" id="buyer" list="clientList" value="南港" style="width: 120px;">
+            <input type="text" id="buyer" list="clientList" value="" placeholder="輸入或選取買受人" style="width: 120px;">
             <span class="buyer-brand">台照</span>
             <button type="button" id="reapplyPriceBtn" class="btn-purple btn-sm no-print" style="margin-left: 5px;">🔄 重新套用客戶專屬價</button>
         </div>
@@ -129,7 +129,7 @@
 
         <h4 class="section-title-red">店家名稱</h4>
         <div class="add-memory-box">
-            <input type="text" id="shopNameInput" placeholder="例如：大毛小毛火鍋料" style="flex: 1;">
+            <input type="text" id="shopNameInput" placeholder="輸入你的店家名稱（留空則不顯示）" style="flex: 1;">
         </div>
         <p class="hint-text">顯示在熱感單據、統計報表與 A4 列印頁首。<strong>留空並離開欄位</strong>即不顯示店家名稱，單據只印「估 價 單」。此設定只存本機瀏覽器，不會寫入 JSON 檔案。</p>
 
@@ -177,7 +177,7 @@
         <p class="hint-text">新增客戶，並為該客戶自由新增與刪除專屬定價商品（未設定專屬價的商品將自動採用商品管理的基底預設價）。</p>
 
         <div class="add-memory-box add-memory-box-client">
-            <input type="text" id="newClientNameInput" placeholder="輸入新客戶名稱 (例如: 大安分店)" style="flex: 2;">
+            <input type="text" id="newClientNameInput" placeholder="輸入新客戶名稱 (例如: 中正分店)" style="flex: 2;">
             <button type="button" id="addClientBtn" class="btn-purple btn-sm">➕ 新增客戶</button>
         </div>
 
@@ -267,6 +267,7 @@
 <datalist id="unitList"></datalist>
 <datalist id="clientList"></datalist>
 
+<script src="assets/js/branding.js"></script>
 <script src="assets/js/core.js"></script>
 <script src="assets/js/currency.js"></script>
 <script src="assets/js/store.js"></script>

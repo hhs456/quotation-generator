@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 紙張規格（A4 / 熱感 10cm、8cm）、@page 注入、列印管線
+ * 估價單產生器 — 紙張規格（A4 / 熱感 10cm、8cm）、@page 注入、列印管線
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    paper.js — 紙張規格、@page 注入、列印管線、熱感單據排版
-   載入順序第 7 棒：依賴 core.js、currency.js；執行期被 invoice.js / report.js 呼叫。
+   載入順序第 8 棒：依賴 core.js、currency.js；執行期被 invoice.js / report.js 呼叫。
    ========================================================================== */
 
 const PAPER_SETTING_KEY = 'printPaper';

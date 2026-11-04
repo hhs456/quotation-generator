@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 客戶名單與客戶專屬定價的管理彈窗
+ * 估價單產生器 — 客戶名單與客戶專屬定價的管理彈窗
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    clients.js — 客戶名單與客戶專屬定價的管理彈窗
-   載入順序第 6 棒：依賴 core.js；執行期會呼叫 store.js / invoice.js / app.js 的函式。
+   載入順序第 7 棒：依賴 core.js；執行期會呼叫 store.js / invoice.js / app.js 的函式。
    ========================================================================== */
 
 function getClientSelectValue() {

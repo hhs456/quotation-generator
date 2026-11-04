@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 本機檔案連結、自動存檔管線、防抹除保護、備份還原
+ * 估價單產生器 — 本機檔案連結、自動存檔管線、防抹除保護、備份還原
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    store.js — 本機檔案連結、自動存檔管線、防抹除保護、備份還原
-   載入順序第 3 棒：依賴 core.js；執行期會呼叫 invoice.js 的 collectState()。
+   載入順序第 4 棒：依賴 core.js；執行期會呼叫 invoice.js 的 collectState()。
    ========================================================================== */
 
 const JSON_FILE_TYPE = {

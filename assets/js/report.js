@@ -1,5 +1,5 @@
 /*
- * 大毛小毛火鍋料估價單產生器 — 單一客戶於指定期間（預設本月）的購貨統計
+ * 估價單產生器 — 單一客戶於指定期間（預設本月）的購貨統計
  * Copyright (C) 2026 Hanson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* ==========================================================================
    report.js — 客戶購貨統計（期間彙整、報表渲染與列印）
-   載入順序第 8 棒：依賴 core.js、currency.js、paper.js；
+   載入順序第 9 棒：依賴 core.js、currency.js、paper.js；
    統計來源為 invoice.js 的歷史單據（getHistoryList）。
    ========================================================================== */
 
