@@ -1,0 +1,10 @@
+# 實際使用的報價資料庫。內容是店家的營業資料（客戶名單、定價、
+# 歷史報價），不屬程式碼授權範圍，不應進版控。
+# 格式範例見 quotation_database.example.json
+quotation_database.json
+
+# 作業系統與編輯器產生
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
