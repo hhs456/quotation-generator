@@ -3,300 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>大毛小毛火鍋料－估價單產生器</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-        }
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            letter-spacing: 8px;
-            border-bottom: 2px solid #d9534f;
-            padding-bottom: 10px;
-            color: #d9534f;
-        }
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .header-info div {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        input {
-            padding: 6px 10px;
-            font-size: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #d9534f;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #fdf2f2;
-            color: #d9534f;
-        }
-        td input {
-            width: 90%;
-            border: none;
-            text-align: center;
-            font-size: 15px;
-            background: transparent;
-        }
-        td input:focus {
-            outline: 1px solid #d9534f;
-            background: #fff;
-        }
-        .qty-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        .qty-container input {
-            width: 55px;
-            border: 1px solid #ccc;
-            text-align: center;
-            background: #fff;
-        }
-        .unit-label {
-            font-size: 15px;
-            color: #333;
-            font-weight: bold;
-        }
-        .total-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
-            background-color: #fdf2f2;
-            padding: 12px 20px;
-            border: 1px solid #d9534f;
-            border-radius: 6px;
-        }
-        .chinese-amount {
-            color: #c9302c;
-            font-size: 17px;
-        }
-        .file-status-bar {
-            background-color: #fcf8e3;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            border: 1px solid #faebcc;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .btn-group {
-            text-align: center;
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        button {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            font-size: 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #c9302c;
-        }
-        .btn-secondary {
-            background-color: #5bc0de;
-        }
-        .btn-secondary:hover {
-            background-color: #31b0d5;
-        }
-        .btn-success {
-            background-color: #5cb85c;
-        }
-        .btn-success:hover {
-            background-color: #4cae4c;
-        }
-        .btn-danger {
-            background-color: #f0ad4e;
-        }
-        .btn-danger:hover {
-            background-color: #ec971f;
-        }
-        .btn-primary {
-            background-color: #337ab7;
-        }
-        .btn-primary:hover {
-            background-color: #286090;
-        }
-        .btn-purple {
-            background-color: #8e44ad;
-        }
-        .btn-purple:hover {
-            background-color: #732d91;
-        }
-        /* 彈跳視窗樣式 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            width: 800px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .modal-content h3 {
-            margin-top: 0;
-            color: #d9534f;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        .add-memory-box {
-            background-color: #fdf2f2;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            border: 1px dashed #d9534f;
-        }
-        .add-memory-box input {
-            min-width: 0;
-        }
-        .add-memory-box button {
-            flex-shrink: 0;
-        }
-        .modal-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .modal-table th, .modal-table td {
-            border: 1px solid #ddd;
-            padding: 6px;
-        }
-        .modal-table th {
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        .modal-table input {
-            width: 90%;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        @media print {
-            body {
-                background: #fff;
-                margin: 0;
-            }
-            .container {
-                box-shadow: none;
-                padding: 0;
-                max-width: 100%;
-            }
-            .no-print {
-                display: none !important;
-            }
-            input {
-                border: none !important;
-                background: transparent !important;
-            }
-            .qty-container input {
-                border: none !important;
-                background: transparent !important;
-            }
-            input::placeholder {
-                color: transparent !important;
-            }
-            input[type=number]::-webkit-inner-spin-button,
-            input[type=number]::-webkit-outer-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            input[type=number] {
-                -moz-appearance: textfield;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/quotation.css">
 </head>
 <body>
 
 <div class="container">
     <h2>估 價 單</h2>
-    
+
+    <div id="compatNotice" class="compat-notice no-print" style="display: none;"></div>
+
     <!-- 本機檔案自動存檔狀態列 -->
     <div id="statusBar" class="file-status-bar no-print">
         <div>
             📁 <strong id="statusTitle">尚未啟用本機自動存檔：</strong> <span id="fileStatusText" style="color: #c9302c; font-weight: bold;">請點擊右側按鈕啟用自動存檔！</span>
         </div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" id="reconnectBtn" class="btn-success" style="padding: 6px 12px; font-size: 13px; display: none; font-weight: bold;" onclick="reconnectLocalFile()">⚡ 啟用自動存檔</button>
-            <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="linkLocalFile()">📁 建立自動存檔檔案</button>
-            <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 13px;" onclick="openLocalFile()">📂 載入其他檔案</button>
+        <div class="status-actions">
+            <button type="button" id="reconnectBtn" class="btn-success btn-sm" style="display: none; font-weight: bold;">⚡ 啟用自動存檔</button>
+            <button type="button" id="restoreBtn" class="btn-neutral btn-sm" style="display: none; font-weight: bold;">↩️ 還原檔案備份</button>
+            <button type="button" id="linkFileBtn" class="btn-primary btn-sm">📁 建立自動存檔檔案</button>
+            <button type="button" id="openFileBtn" class="btn-secondary btn-sm">📂 載入其他檔案</button>
         </div>
     </div>
 
     <div class="header-info">
         <div>
             <label>買受人：</label>
-            <input type="text" id="buyer" list="clientList" value="南港" style="width: 120px;" oninput="onBuyerChange()">
-            <span style="font-weight: bold; font-size: 16px;">台照</span>
-            <button type="button" class="btn-purple no-print" style="padding: 5px 10px; font-size: 13px; margin-left: 5px;" onclick="onBuyerChange()">🔄 重新套用客戶專屬價</button>
+            <input type="text" id="buyer" list="clientList" value="南港" style="width: 120px;">
+            <span class="buyer-brand">台照</span>
+            <button type="button" id="reapplyPriceBtn" class="btn-purple btn-sm no-print" style="margin-left: 5px;">🔄 重新套用客戶專屬價</button>
         </div>
         <div>
             <label>單號：</label>
-            <input type="text" id="invoiceNo" value="" style="width: 120px;" oninput="handleUserAction()">
+            <input type="text" id="invoiceNo" value="" style="width: 120px;">
         </div>
         <div>
             <label>日期：</label>
-            <input type="text" id="invoiceDate" value="" style="width: 130px;" oninput="handleUserAction()">
+            <input type="text" id="invoiceDate" value="" style="width: 130px;">
         </div>
     </div>
 
@@ -312,9 +54,7 @@
                 <th style="width: 5%;" class="no-print">操作</th>
             </tr>
         </thead>
-        <tbody id="itemTableBody">
-            <!-- 程式動態產生 -->
-        </tbody>
+        <tbody id="itemTableBody"></tbody>
     </table>
 
     <div class="total-section">
@@ -323,21 +63,23 @@
     </div>
 
     <div class="btn-group no-print">
-        <button type="button" class="btn-primary" onclick="createNewInvoice()">🆕 開立新單</button>
-        <button type="button" onclick="addRow(); handleUserAction();">➕ 新增一行</button>
-        <button type="button" class="btn-success" onclick="saveToHistory()">💾 儲存單據</button>
-        <button type="button" class="btn-secondary" onclick="openHistoryModal()">📂 歷史單據</button>
-        <button type="button" class="btn-danger" onclick="openMemoryModal()">⚙️ 商品管理</button>
-        <button type="button" class="btn-purple" onclick="openClientModal()">👥 客戶管理</button>
-        <button type="button" style="background-color: #333;" onclick="validateAndPrint()">🖨️ 列印單據</button>
+        <button type="button" id="newInvoiceBtn" class="btn-primary">🆕 開立新單</button>
+        <button type="button" id="addRowBtn">➕ 新增一行</button>
+        <button type="button" id="saveHistoryBtn" class="btn-success">💾 儲存單據</button>
+        <button type="button" id="openHistoryBtn" class="btn-secondary">📂 歷史單據</button>
+        <button type="button" id="openMemoryBtn" class="btn-danger">⚙️ 商品管理</button>
+        <button type="button" id="openClientBtn" class="btn-purple">👥 客戶管理</button>
+        <button type="button" id="printBtn" class="btn-dark">🖨️ 列印單據</button>
     </div>
+
+    <div id="appVersion" class="app-version no-print"></div>
 </div>
 
 <!-- 歷史單據管理彈跳視窗 -->
 <div id="historyModal" class="modal no-print">
     <div class="modal-content">
         <h3>歷史單據管理</h3>
-        <p style="font-size: 14px; color: #666;">您可以檢視、載入或刪除過去儲存的單據紀錄。</p>
+        <p class="hint-text">您可以檢視、載入或刪除過去儲存的單據紀錄。</p>
         <table class="modal-table">
             <thead>
                 <tr>
@@ -348,12 +90,10 @@
                     <th style="width: 15%;">操作</th>
                 </tr>
             </thead>
-            <tbody id="historyTableBody">
-                <!-- 動態載入歷史清單 -->
-            </tbody>
+            <tbody id="historyTableBody"></tbody>
         </table>
-        <div style="text-align: right; margin-top: 15px;">
-            <button type="button" class="btn-secondary" onclick="closeHistoryModal()">關閉視窗</button>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-action="close-modal" data-target="historyModal">關閉視窗</button>
         </div>
     </div>
 </div>
@@ -362,26 +102,22 @@
 <div id="memoryModal" class="modal no-print">
     <div class="modal-content">
         <h3>商品管理與單位設定</h3>
-        
-        <!-- 單位管理 -->
-        <h4 style="color: #d9534f; margin-bottom: 8px;">單位管理</h4>
+
+        <h4 class="section-title-red">單位管理</h4>
         <div class="add-memory-box">
             <input type="text" id="newUnitName" placeholder="輸入新單位名稱 (例如: 箱、盒)" style="flex: 2;">
-            <button type="button" onclick="addNewUnit()" style="padding: 6px 15px; font-size: 14px;">➕ 新增單位</button>
+            <button type="button" id="addUnitBtn" class="btn-sm">➕ 新增單位</button>
         </div>
-        <div id="unitListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
-            <!-- 動態載入可用單位標籤 -->
-        </div>
+        <div id="unitListContainer" class="flex-wrap-gap" style="margin-bottom: 20px;"></div>
 
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <hr class="divider">
 
-        <!-- 商品基底管理 -->
-        <h4 style="color: #d9534f; margin-bottom: 8px;">商品基本資料庫 (預設價格)</h4>
+        <h4 class="section-title-red">商品基本資料庫 (預設價格)</h4>
         <div class="add-memory-box">
             <input type="text" id="newMemName" placeholder="輸入商品名稱" style="flex: 2;">
             <input type="text" list="unitList" id="newMemUnit" placeholder="預設單位" style="flex: 1;">
             <input type="number" id="newMemPrice" placeholder="預設單價" style="flex: 1;">
-            <button type="button" onclick="addNewMemoryItem()" style="padding: 6px 15px; font-size: 14px;">➕ 新增商品</button>
+            <button type="button" id="addProductBtn" class="btn-sm">➕ 新增商品</button>
         </div>
 
         <table class="modal-table">
@@ -393,52 +129,45 @@
                     <th style="width: 15%;">操作</th>
                 </tr>
             </thead>
-            <tbody id="memoryTableBody">
-                <!-- 動態載入記憶清單 -->
-            </tbody>
+            <tbody id="memoryTableBody"></tbody>
         </table>
-        
-        <div style="text-align: right; margin-top: 15px;">
-            <button type="button" class="btn-secondary" onclick="closeMemoryModal()">關閉視窗</button>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-action="close-modal" data-target="memoryModal">關閉視窗</button>
         </div>
     </div>
 </div>
 
 <!-- 客戶管理彈跳視窗 -->
 <div id="clientModal" class="modal no-print">
-    <div class="modal-content" style="border-top: 5px solid #8e44ad;">
-        <h3 style="color: #8e44ad;">👥 客戶管理</h3>
-        <p style="font-size: 14px; color: #666;">新增客戶，並為該客戶**自由新增與刪除**專屬定價商品（未設定專屬價的商品將自動採用商品管理的基底預設價）。</p>
-        
-        <!-- 新增客戶專用列 -->
-        <div class="add-memory-box" style="border-color: #8e44ad; background-color: #f9f4fc;">
+    <div class="modal-content modal-content-client">
+        <h3>👥 客戶管理</h3>
+        <p class="hint-text">新增客戶，並為該客戶自由新增與刪除專屬定價商品（未設定專屬價的商品將自動採用商品管理的基底預設價）。</p>
+
+        <div class="add-memory-box add-memory-box-client">
             <input type="text" id="newClientNameInput" placeholder="輸入新客戶名稱 (例如: 大安分店)" style="flex: 2;">
-            <button type="button" class="btn-purple" onclick="addNewClient()" style="padding: 6px 15px; font-size: 14px;">➕ 新增客戶</button>
+            <button type="button" id="addClientBtn" class="btn-purple btn-sm">➕ 新增客戶</button>
         </div>
 
-        <!-- 選擇客戶與刪除整戶專屬價 -->
-        <div class="add-memory-box" style="flex-direction: column; align-items: stretch; margin-top: 10px; border-color: #8e44ad; background-color: #f9f4fc;">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <label style="font-weight: bold; min-width: 80px;">選擇客戶：</label>
-                <select id="selectedClientSelect" style="flex: 2; padding: 6px 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 4px;" onchange="renderClientPricingTable()">
-                    <!-- 動態載入客戶清單 -->
-                </select>
-                <button type="button" class="btn-danger" onclick="deleteClientPricing()" style="padding: 6px 12px; font-size: 14px;">🗑️ 清除此客戶所有專屬價</button>
+        <div class="add-memory-box add-memory-box-client add-memory-box-column">
+            <div class="flex-row">
+                <label class="label-bold">選擇客戶：</label>
+                <select id="selectedClientSelect" class="modal-select"></select>
+                <button type="button" id="deleteClientBtn" class="btn-sm">🗑️ 刪除客戶</button>
+                <button type="button" id="clearClientBtn" class="btn-danger btn-sm">✖ 僅清除專屬價</button>
             </div>
         </div>
 
-        <!-- 自行新增該客戶的專屬定價商品 -->
-        <div style="background: #fff; padding: 10px; border: 1px solid #dcd6e7; border-radius: 6px; margin-bottom: 15px;">
-            <h4 style="margin: 0 0 8px 0; color: #8e44ad; font-size: 15px;">為此客戶新增專屬定價商品</h4>
-            <div style="display: flex; gap: 8px;">
+        <div class="client-pricing-panel">
+            <h4>為此客戶新增專屬定價商品</h4>
+            <div class="flex-row">
                 <input type="text" list="productList" id="newClientProdName" placeholder="選取或輸入商品名稱" style="flex: 2;">
                 <input type="number" id="newClientProdPrice" placeholder="專屬單價" style="flex: 1;">
-                <button type="button" class="btn-purple" onclick="addCustomPriceForClient()" style="padding: 6px 12px; font-size: 14px;">➕ 新增專屬定價</button>
+                <button type="button" id="addClientPriceBtn" class="btn-purple btn-sm">➕ 新增專屬定價</button>
             </div>
         </div>
 
-        <!-- 專屬定價商品清單表格 -->
-        <div style="max-height: 250px; overflow-y: auto;">
+        <div class="client-pricing-scroll">
             <table class="modal-table">
                 <thead>
                     <tr>
@@ -448,14 +177,12 @@
                         <th style="width: 10%;">操作</th>
                     </tr>
                 </thead>
-                <tbody id="clientPricingTableBody">
-                    <!-- 動態載入該客戶自定義的專屬定價表格 -->
-                </tbody>
+                <tbody id="clientPricingTableBody"></tbody>
             </table>
         </div>
-        
-        <div style="text-align: right; margin-top: 15px;">
-            <button type="button" class="btn-secondary" onclick="closeClientModal()">關閉視窗</button>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-action="close-modal" data-target="clientModal">關閉視窗</button>
         </div>
     </div>
 </div>
@@ -465,1007 +192,13 @@
 <datalist id="unitList"></datalist>
 <datalist id="clientList"></datalist>
 
-<script>
-    let globalFileHandle = null;
-    let hasWarnedUnlinked = false;
-
-    const defaultItems = [
-        { name: "凍豆腐", price: 42, unit: "斤", qty: 5 }
-    ];
-
-    const defaultUnits = ["斤", "包", "個", "箱", "盒", "台斤", "公斤"];
-
-    function openIDB() {
-        return new Promise((resolve, reject) => {
-            let request = indexedDB.open("QuotationAppDB", 1);
-            request.onupgradeneeded = e => {
-                let db = e.target.result;
-                if (!db.objectStoreNames.contains("handles")) {
-                    db.createObjectStore("handles");
-                }
-            };
-            request.onsuccess = e => resolve(e.target.result);
-            request.onerror = e => reject(e.target.error);
-        });
-    }
-
-    async function saveHandleToIDB(handle) {
-        let db = await openIDB();
-        return new Promise((resolve, reject) => {
-            let tx = db.transaction("handles", "readwrite");
-            let store = tx.objectStore("handles");
-            store.put(handle, "savedFileHandle");
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-        });
-    }
-
-    async function loadHandleFromIDB() {
-        let db = await openIDB();
-        return new Promise((resolve, reject) => {
-            let tx = db.transaction("handles", "readonly");
-            let store = tx.objectStore("handles");
-            let req = store.get("savedFileHandle");
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
-        });
-    }
-
-    function getUnitDB() {
-        let saved = localStorage.getItem('quotation_units_v1');
-        if (!saved) {
-            localStorage.setItem('quotation_units_v1', JSON.stringify(defaultUnits));
-            return defaultUnits;
-        }
-        return JSON.parse(saved);
-    }
-
-    function updateUnitDatalist() {
-        let units = getUnitDB();
-        let datalist = document.getElementById('unitList');
-        datalist.innerHTML = '';
-        units.forEach(u => {
-            let option = document.createElement('option');
-            option.value = u;
-            datalist.appendChild(option);
-        });
-    }
-
-    function getProductDB() {
-        let saved = localStorage.getItem('quotation_products_v6');
-        if (!saved) {
-            let initialDB = {};
-            defaultItems.forEach(item => {
-                initialDB[item.name] = { price: item.price, unit: item.unit };
-            });
-            localStorage.setItem('quotation_products_v6', JSON.stringify(initialDB));
-            return initialDB;
-        }
-        return JSON.parse(saved);
-    }
-
-    function getClientPricesDB() {
-        let saved = localStorage.getItem('quotation_client_prices_v1');
-        if (!saved) return {};
-        return JSON.parse(saved);
-    }
-
-    function updateDatalist() {
-        let db = getProductDB();
-        let datalist = document.getElementById('productList');
-        datalist.innerHTML = '';
-        for (let name in db) {
-            let option = document.createElement('option');
-            option.value = name;
-            datalist.appendChild(option);
-        }
-        updateClientDatalist();
-    }
-
-    function updateClientDatalist() {
-        let clientPrices = getClientPricesDB();
-        let datalist = document.getElementById('clientList');
-        datalist.innerHTML = '';
-        
-        let clients = new Set(Object.keys(clientPrices));
-        let currentBuyer = document.getElementById('buyer').value.trim();
-        if (currentBuyer) clients.add(currentBuyer);
-        clients.add("南港");
-
-        clients.forEach(c => {
-            let option = document.createElement('option');
-            option.value = c;
-            datalist.appendChild(option);
-        });
-
-        let select = document.getElementById('selectedClientSelect');
-        if (select) {
-            let currentSelected = select.value;
-            select.innerHTML = '';
-            clients.forEach(c => {
-                let opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c;
-                select.appendChild(opt);
-            });
-            if (clients.has(currentSelected)) {
-                select.value = currentSelected;
-            }
-        }
-    }
-
-    function addNewClient() {
-        let input = document.getElementById('newClientNameInput');
-        let clientName = input.value.trim();
-        if (!clientName) {
-            alert('請輸入要新增的客戶名稱！');
-            input.focus();
-            return;
-        }
-
-        let clientPrices = getClientPricesDB();
-        if (!clientPrices[clientName]) {
-            clientPrices[clientName] = {};
-            localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-        }
-
-        input.value = '';
-        updateClientDatalist();
-        
-        let select = document.getElementById('selectedClientSelect');
-        select.value = clientName;
-        renderClientPricingTable();
-        handleUserAction();
-        alert(`已成功新增客戶「${clientName}」！`);
-    }
-
-    function getProductPriceForClient(productName, clientName) {
-        let db = getProductDB();
-        if (!db[productName]) return 0;
-        let basePrice = db[productName].price;
-        
-        if (!clientName) return basePrice;
-        let clientPrices = getClientPricesDB();
-        if (clientPrices[clientName] && clientPrices[clientName][productName] !== undefined && clientPrices[clientName][productName] !== '') {
-            return parseFloat(clientPrices[clientName][productName]);
-        }
-        return basePrice;
-    }
-
-    // 當買受人變更或點擊重新套用按鈕時，自動更新表格內所有商品的單價
-    function onBuyerChange() {
-        let buyer = document.getElementById('buyer').value.trim();
-        let rows = document.querySelectorAll('#itemTableBody tr');
-        
-        rows.forEach(tr => {
-            let nameInput = tr.querySelector('.item-name');
-            let priceInput = tr.querySelector('.item-price');
-            if (nameInput && priceInput) {
-                let productName = nameInput.value.trim();
-                if (productName) {
-                    priceInput.value = getProductPriceForClient(productName, buyer);
-                    updateRowAmount(tr);
-                }
-            }
-        });
-        handleUserAction();
-    }
-
-    function handleUserAction() {
-        updateClientDatalist();
-        saveCurrentState();
-        if (!globalFileHandle && !hasWarnedUnlinked) {
-            hasWarnedUnlinked = true;
-            alert('⚠️ 溫馨提醒：\n目前尚未啟用本機自動存檔！\n修改的資料僅暫存在瀏覽器中。請記得點擊狀態列的「啟用自動存檔」按鈕，才能直接存入 D 碟喔！');
-        }
-    }
-
-    function loadStateIntoUI(backupData) {
-        if (backupData.products) localStorage.setItem('quotation_products_v6', backupData.products);
-        if (backupData.units) localStorage.setItem('quotation_units_v1', backupData.units);
-        if (backupData.clientPrices) localStorage.setItem('quotation_client_prices_v1', backupData.clientPrices);
-        if (backupData.history) localStorage.setItem('quotation_history_list_v4', backupData.history);
-        if (backupData.seq) localStorage.setItem('quotation_invoice_seq', backupData.seq);
-        if (backupData.currentState) localStorage.setItem('quotation_current_state_v4', backupData.currentState);
-
-        updateUnitDatalist();
-        updateDatalist();
-
-        let state = backupData.currentState ? JSON.parse(backupData.currentState) : null;
-        if (state) {
-            document.getElementById('buyer').value = state.buyer || '';
-            document.getElementById('invoiceNo').value = state.invoiceNo || '';
-            document.getElementById('invoiceDate').value = state.invoiceDate || '';
-            
-            let tbody = document.getElementById('itemTableBody');
-            tbody.innerHTML = '';
-            if (state.items && state.items.length > 0) {
-                state.items.forEach(item => addRow(item));
-            } else {
-                defaultItems.forEach(item => addRow(item));
-            }
-        }
-        calculateGrandTotal();
-
-        let bar = document.getElementById('statusBar');
-        bar.style.backgroundColor = '#eef2f7';
-        bar.style.borderColor = '#bce8f1';
-        document.getElementById('statusTitle').textContent = '本機自動存檔中：';
-        document.getElementById('fileStatusText').innerHTML = `已成功啟用 [<strong>${globalFileHandle.name}</strong>] 自動存檔`;
-        document.getElementById('fileStatusText').style.color = '#5cb85c';
-        document.getElementById('reconnectBtn').style.display = 'none';
-    }
-
-    async function saveCurrentState() {
-        let state = {
-            buyer: document.getElementById('buyer').value,
-            invoiceNo: document.getElementById('invoiceNo').value,
-            invoiceDate: document.getElementById('invoiceDate').value,
-            items: []
-        };
-        let rows = document.querySelectorAll('#itemTableBody tr');
-        rows.forEach(tr => {
-            let nameInput = tr.querySelector('.item-name');
-            let qtyInput = tr.querySelector('.item-qty');
-            let unitSpan = tr.querySelector('.unit-label');
-            let priceInput = tr.querySelector('.item-price');
-            let remarkInput = tr.querySelector('.item-remark');
-            if (nameInput) {
-                state.items.push({
-                    name: nameInput.value,
-                    qty: qtyInput ? qtyInput.value : '',
-                    unit: unitSpan ? unitSpan.textContent : '斤',
-                    price: priceInput ? priceInput.value : '',
-                    remark: remarkInput ? remarkInput.value : ''
-                });
-            }
-        });
-
-        let fullData = {
-            products: localStorage.getItem('quotation_products_v6'),
-            units: localStorage.getItem('quotation_units_v1'),
-            clientPrices: localStorage.getItem('quotation_client_prices_v1'),
-            history: localStorage.getItem('quotation_history_list_v4'),
-            seq: localStorage.getItem('quotation_invoice_seq'),
-            currentState: JSON.stringify(state)
-        };
-
-        localStorage.setItem('quotation_current_state_v4', JSON.stringify(state));
-
-        if (globalFileHandle) {
-            try {
-                let writable = await globalFileHandle.createWritable();
-                await writable.write(JSON.stringify(fullData, null, 2));
-                await writable.close();
-                
-                let bar = document.getElementById('statusBar');
-                bar.style.backgroundColor = '#eef2f7';
-                bar.style.borderColor = '#bce8f1';
-                document.getElementById('statusTitle').textContent = '本機自動存檔中：';
-                document.getElementById('fileStatusText').innerHTML = `已成功啟用 [<strong>${globalFileHandle.name}</strong>] 自動存檔`;
-                document.getElementById('fileStatusText').style.color = '#5cb85c';
-            } catch (err) {
-                console.error('自動寫入本機檔案失敗', err);
-            }
-        }
-    }
-
-    async function linkLocalFile() {
-        if (!window.showSaveFilePicker) {
-            alert('您的瀏覽器不支援直接寫入本機檔案 API，請使用 Chrome 或 Edge 瀏覽器。');
-            return;
-        }
-        try {
-            const options = {
-                suggestedName: 'quotation_database.json',
-                startIn: globalFileHandle || undefined,
-                types: [{
-                    description: 'JSON 檔案',
-                    accept: { 'application/json': ['.json'] },
-                }],
-            };
-            globalFileHandle = await window.showSaveFilePicker(options);
-            await saveHandleToIDB(globalFileHandle);
-            
-            let bar = document.getElementById('statusBar');
-            bar.style.backgroundColor = '#eef2f7';
-            bar.style.borderColor = '#bce8f1';
-            document.getElementById('statusTitle').textContent = '本機自動存檔中：';
-            document.getElementById('fileStatusText').innerHTML = `已成功啟用 [<strong>${globalFileHandle.name}</strong>] 自動存檔`;
-            document.getElementById('fileStatusText').style.color = '#5cb85c';
-            document.getElementById('reconnectBtn').style.display = 'none';
-            
-            saveCurrentState();
-            alert(`自動存檔啟用成功（檔案名稱：${globalFileHandle.name}）！系統已即時自動存檔中。`);
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                console.error(err);
-            }
-        }
-    }
-
-    async function reconnectLocalFile() {
-        try {
-            let handle = await loadHandleFromIDB();
-            if (!handle) {
-                alert('找不到先前記憶的檔案紀錄，請先點擊「建立自動存檔檔案」。');
-                return;
-            }
-            const opts = { mode: 'readwrite' };
-            if ((await handle.queryPermission(opts)) !== 'granted') {
-                if ((await handle.requestPermission(opts)) !== 'granted') {
-                    alert('未取得檔案存取權限！');
-                    return;
-                }
-            }
-            globalFileHandle = handle;
-            const file = await handle.getFile();
-            const contents = await file.text();
-            let backupData = JSON.parse(contents);
-
-            loadStateIntoUI(backupData);
-            alert('已成功啟用自動存檔！');
-        } catch (err) {
-            alert('啟用自動存檔失敗，可能檔案已被移動或刪除，請重新建立檔案。');
-            console.error(err);
-        }
-    }
-
-    async function openLocalFile() {
-        if (!window.showOpenFilePicker) {
-            alert('您的瀏覽器不支援此功能。');
-            return;
-        }
-        try {
-            const options = {
-                startIn: globalFileHandle || undefined,
-                types: [{
-                    description: 'JSON 檔案',
-                    accept: { 'application/json': ['.json'] },
-                }],
-            };
-            const [fileHandle] = await window.showOpenFilePicker(options);
-            globalFileHandle = fileHandle;
-            await saveHandleToIDB(globalFileHandle);
-
-            const file = await fileHandle.getFile();
-            const contents = await file.text();
-            let backupData = JSON.parse(contents);
-
-            loadStateIntoUI(backupData);
-            alert(`本機檔案「${globalFileHandle.name}」讀取成功並已啟用自動存檔！`);
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                console.error(err);
-            }
-        }
-    }
-
-    function validateAndPrint() {
-        let rows = document.querySelectorAll('#itemTableBody tr');
-        let hasError = false;
-        let errorMsg = '';
-
-        rows.forEach((tr, index) => {
-            let name = tr.querySelector('.item-name').value.trim();
-            let qty = tr.querySelector('.item-qty').value.trim();
-            let price = tr.querySelector('.item-price').value.trim();
-            let remark = tr.querySelector('.item-remark').value.trim();
-
-            if (name !== '' || qty !== '' || price !== '' || remark !== '') {
-                if (!name) {
-                    hasError = true;
-                    errorMsg = `第 ${index + 1} 行：有填寫內容但未輸入「品名」。`;
-                } else if (!price) {
-                    hasError = true;
-                    errorMsg = `第 ${index + 1} 行：商品「${name}」未輸入「單價」。`;
-                }
-            }
-        });
-
-        if (hasError) {
-            alert('⚠️ 無法列印單據：\n' + errorMsg + '\n請補齊資料後再試。');
-            return;
-        }
-
-        window.print();
-    }
-
-    function getNextInvoiceNo() {
-        let lastSeq = parseInt(localStorage.getItem('quotation_invoice_seq') || '4183');
-        let nextSeq = lastSeq + 1;
-        localStorage.setItem('quotation_invoice_seq', nextSeq);
-        return String(nextSeq).padStart(7, '0');
-    }
-
-    function createNewInvoice() {
-        if (confirm('確定要開立新單據嗎？這將清空目前畫面並自動產生下一組流水單號。')) {
-            document.getElementById('buyer').value = '';
-            document.getElementById('invoiceNo').value = getNextInvoiceNo();
-            document.getElementById('invoiceDate').value = '115年 11月 4日';
-            
-            let tbody = document.getElementById('itemTableBody');
-            tbody.innerHTML = '';
-            addRow();
-            calculateGrandTotal();
-            handleUserAction();
-        }
-    }
-
-    function numberToChineseCurrency(num) {
-        if (isNaN(num) || num <= 0) return '零元整';
-        let cnNums = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
-        let cnIntRadice = ['', '拾', '佰', '仟'];
-        let cnIntUnits = ['', '萬', '億', '兆'];
-        let output = '';
-        
-        let stringNum = Math.floor(num).toString();
-        let parts = [];
-        while (stringNum.length > 0) {
-            parts.unshift(stringNum.slice(Math.max(0, stringNum.length - 4)));
-            stringNum = stringNum.slice(0, Math.max(0, stringNum.length - 4));
-        }
-        
-        for (let i = 0; i < parts.length; i++) {
-            let p = parts[i];
-            let subOut = '';
-            let zeroFlag = false;
-            let pLen = p.length;
-            for (let j = 0; j < pLen; j++) {
-                let n = parseInt(p[j]);
-                let u = pLen - 1 - j;
-                if (n === 0) {
-                    zeroFlag = true;
-                } else {
-                    if (zeroFlag) {
-                        subOut += cnNums[0];
-                        zeroFlag = false;
-                    }
-                    subOut += cnNums[n] + cnIntRadice[u];
-                }
-            }
-            subOut = subOut.replace(/零+$/, '');
-            if (subOut.length > 0) {
-                subOut += cnIntUnits[parts.length - 1 - i];
-                output += subOut;
-            } else {
-                if (output.length > 0 && !output.endsWith('零')) {
-                    output += '零';
-                }
-            }
-        }
-        return output + '元整';
-    }
-
-    function addRow(data = null) {
-        let tbody = document.getElementById('itemTableBody');
-        let rowCount = tbody.rows.length + 1;
-        let tr = document.createElement('tr');
-
-        let nameVal = data ? data.name : '';
-        let qtyVal = data ? data.qty : '';
-        let unitVal = data ? data.unit : '斤';
-        let priceVal = data ? data.price : '';
-        let remarkVal = data ? (data.remark || '') : '';
-        let amountVal = (priceVal !== '' && qtyVal !== '') ? Math.round(qtyVal * priceVal) : '';
-
-        if (nameVal && !data.unit) {
-            let db = getProductDB();
-            if (db[nameVal]) {
-                unitVal = db[nameVal].unit;
-                if (priceVal === '') {
-                    let buyer = document.getElementById('buyer').value.trim();
-                    priceVal = getProductPriceForClient(nameVal, buyer);
-                    amountVal = (priceVal !== '' && qtyVal !== '') ? Math.round(qtyVal * priceVal) : '';
-                }
-            }
-        }
-
-        tr.innerHTML = `
-            <td>${rowCount}</td>
-            <td><input type="text" list="productList" class="item-name" value="${nameVal}" placeholder="輸入或選取商品"></td>
-            <td>
-                <div class="qty-container">
-                    <input type="number" class="item-qty" value="${qtyVal}" placeholder="數量">
-                    <span class="unit-label">${unitVal}</span>
-                </div>
-            </td>
-            <td><input type="number" class="item-price" value="${priceVal}" placeholder="單價"></td>
-            <td class="item-amount">${amountVal}</td>
-            <td><input type="text" class="item-remark" value="${remarkVal}" placeholder="備註"></td>
-            <td class="no-print"><button type="button" style="background:#d9534f; padding:4px 8px; font-size:12px;" onclick="deleteRow(this)">刪除</button></td>
-        `;
-        tbody.appendChild(tr);
-
-        let nameInput = tr.querySelector('.item-name');
-        let qtyInput = tr.querySelector('.item-qty');
-        let unitSpan = tr.querySelector('.unit-label');
-        let priceInput = tr.querySelector('.item-price');
-        let remarkInput = tr.querySelector('.item-remark');
-
-        nameInput.addEventListener('input', function() {
-            let db = getProductDB();
-            let val = this.value.trim();
-            if (db[val]) {
-                unitSpan.textContent = db[val].unit;
-                let buyer = document.getElementById('buyer').value.trim();
-                priceInput.value = getProductPriceForClient(val, buyer);
-                updateRowAmount(tr);
-            }
-            handleUserAction();
-        });
-
-        nameInput.addEventListener('change', function() {
-            let db = getProductDB();
-            let val = this.value.trim();
-            if (db[val]) {
-                unitSpan.textContent = db[val].unit;
-                let buyer = document.getElementById('buyer').value.trim();
-                priceInput.value = getProductPriceForClient(val, buyer);
-                updateRowAmount(tr);
-            }
-            handleUserAction();
-        });
-
-        qtyInput.addEventListener('input', function() {
-            updateRowAmount(tr);
-            handleUserAction();
-        });
-
-        priceInput.addEventListener('input', function() {
-            updateRowAmount(tr);
-            handleUserAction();
-        });
-
-        remarkInput.addEventListener('input', function() {
-            handleUserAction();
-        });
-    }
-
-    function updateRowAmount(tr) {
-        let qty = parseFloat(tr.querySelector('.item-qty').value) || 0;
-        let price = parseFloat(tr.querySelector('.item-price').value) || 0;
-        let amountTd = tr.querySelector('.item-amount');
-
-        if (qty && price) {
-            amountTd.textContent = Math.round(qty * price);
-        } else {
-            amountTd.textContent = '';
-        }
-        calculateGrandTotal();
-    }
-
-    function calculateGrandTotal() {
-        let amounts = document.querySelectorAll('.item-amount');
-        let total = 0;
-        amounts.forEach(td => {
-            let val = parseFloat(td.textContent);
-            if (!isNaN(val)) total += val;
-        });
-        document.getElementById('grandTotal').textContent = total;
-        document.getElementById('chineseTotal').textContent = numberToChineseCurrency(total);
-    }
-
-    function deleteRow(btn) {
-        let tr = btn.closest('tr');
-        tr.remove();
-        reindexRows();
-        calculateGrandTotal();
-        handleUserAction();
-    }
-
-    function reindexRows() {
-        let rows = document.querySelectorAll('#itemTableBody tr');
-        rows.forEach((tr, index) => {
-            tr.cells[0].textContent = index + 1;
-        });
-    }
-
-    function saveToHistory() {
-        handleUserAction();
-        let state = JSON.parse(localStorage.getItem('quotation_current_state_v4'));
-        if (!state || state.items.length === 0) {
-            alert('目前沒有品項可儲存！');
-            return;
-        }
-        let historyList = JSON.parse(localStorage.getItem('quotation_history_list_v4') || '[]');
-        let record = {
-            id: 'INV_' + Date.now(),
-            dateStr: state.invoiceDate || '未指定日期',
-            buyer: state.buyer || '未指定買受人',
-            invoiceNo: state.invoiceNo || '無單號',
-            total: document.getElementById('grandTotal').textContent,
-            data: state
-        };
-        historyList.unshift(record);
-        localStorage.setItem('quotation_history_list_v4', JSON.stringify(historyList));
-        handleUserAction();
-        alert('已成功將此單據儲存至歷史紀錄！');
-    }
-
-    function openHistoryModal() {
-        let historyList = JSON.parse(localStorage.getItem('quotation_history_list_v4') || '[]');
-        let tbody = document.getElementById('historyTableBody');
-        tbody.innerHTML = '';
-
-        if (historyList.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="color:#888; padding: 15px;">尚無歷史單據紀錄</td></tr>';
-        } else {
-            historyList.forEach(rec => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${rec.invoiceNo}</td>
-                    <td>${rec.buyer}</td>
-                    <td>${rec.dateStr}</td>
-                    <td>$${rec.total}</td>
-                    <td>
-                        <button type="button" style="background:#5bc0de; padding:3px 6px; font-size:12px;" onclick="loadHistoryItem('${rec.id}')">載入</button>
-                        <button type="button" style="background:#d9534f; padding:3px 6px; font-size:12px;" onclick="deleteHistoryItem('${rec.id}')">刪除</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        document.getElementById('historyModal').style.display = 'flex';
-    }
-
-    function closeHistoryModal() {
-        document.getElementById('historyModal').style.display = 'none';
-    }
-
-    function loadHistoryItem(id) {
-        let historyList = JSON.parse(localStorage.getItem('quotation_history_list_v4') || '[]');
-        let rec = historyList.find(r => r.id === id);
-        if (rec) {
-            document.getElementById('buyer').value = rec.data.buyer;
-            document.getElementById('invoiceNo').value = rec.data.invoiceNo;
-            document.getElementById('invoiceDate').value = rec.data.invoiceDate;
-
-            let tbody = document.getElementById('itemTableBody');
-            tbody.innerHTML = '';
-            rec.data.items.forEach(item => {
-                addRow(item);
-            });
-            calculateGrandTotal();
-            handleUserAction();
-            closeHistoryModal();
-            alert(`已成功載入單號：${rec.invoiceNo} 的單據！`);
-        }
-    }
-
-    function deleteHistoryItem(id) {
-        if (confirm('確定要刪除這筆歷史單據紀錄嗎？')) {
-            let historyList = JSON.parse(localStorage.getItem('quotation_history_list_v4') || '[]');
-            historyList = historyList.filter(r => r.id !== id);
-            localStorage.setItem('quotation_history_list_v4', JSON.stringify(historyList));
-            handleUserAction();
-            openHistoryModal();
-        }
-    }
-
-    function openMemoryModal() {
-        renderUnitManager();
-        renderProductManager();
-        document.getElementById('memoryModal').style.display = 'flex';
-    }
-
-    function closeMemoryModal() {
-        document.getElementById('memoryModal').style.display = 'none';
-        updateDatalist();
-        updateUnitDatalist();
-    }
-
-    function openClientModal() {
-        renderClientPricingTable();
-        document.getElementById('clientModal').style.display = 'flex';
-    }
-
-    function closeClientModal() {
-        document.getElementById('clientModal').style.display = 'none';
-        updateClientDatalist();
-    }
-
-    function renderUnitManager() {
-        let units = getUnitDB();
-        let container = document.getElementById('unitListContainer');
-        container.innerHTML = '';
-        units.forEach(u => {
-            let badge = document.createElement('div');
-            badge.style.cssText = 'background: #fdf2f2; border: 1px solid #d9534f; padding: 4px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; font-size: 14px; color: #333;';
-            badge.innerHTML = `<span>${u}</span> <button type="button" style="background: #d9534f; color: white; border: none; border-radius: 3px; padding: 1px 6px; font-size: 12px; cursor: pointer;" onclick="deleteUnit('${u}')">×</button>`;
-            container.appendChild(badge);
-        });
-    }
-
-    function addNewUnit() {
-        let input = document.getElementById('newUnitName');
-        let val = input.value.trim();
-        if (!val) {
-            alert('請輸入單位名稱！');
-            input.focus();
-            return;
-        }
-        let units = getUnitDB();
-        if (units.includes(val)) {
-            alert('此單位已經存在！');
-            return;
-        }
-        units.push(val);
-        localStorage.setItem('quotation_units_v1', JSON.stringify(units));
-        input.value = '';
-        updateUnitDatalist();
-        renderUnitManager();
-        handleUserAction();
-    }
-
-    function deleteUnit(unitName) {
-        let units = getUnitDB();
-        if (units.length <= 1) {
-            alert('至少需保留一個單位！');
-            return;
-        }
-        if (confirm(`確定要刪除單位「${unitName}」嗎？`)) {
-            units = units.filter(u => u !== unitName);
-            localStorage.setItem('quotation_units_v1', JSON.stringify(units));
-            updateUnitDatalist();
-            renderUnitManager();
-            handleUserAction();
-        }
-    }
-
-    function renderProductManager() {
-        let db = getProductDB();
-        let tbody = document.getElementById('memoryTableBody');
-        tbody.innerHTML = '';
-
-        for (let name in db) {
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${name}</strong></td>
-                <td><input type="text" list="unitList" value="${db[name].unit}" onchange="updateMemoryData('${name}', 'unit', this.value)"></td>
-                <td><input type="number" value="${db[name].price}" onchange="updateMemoryData('${name}', 'price', this.value)"></td>
-                <td><button type="button" style="background:#d9534f; padding:3px 6px; font-size:12px;" onclick="deleteMemoryItem('${name}')">刪除</button></td>
-            `;
-            tbody.appendChild(tr);
-        }
-    }
-
-    function addNewMemoryItem() {
-        let nameInput = document.getElementById('newMemName');
-        let unitInput = document.getElementById('newMemUnit');
-        let priceInput = document.getElementById('newMemPrice');
-
-        let name = nameInput.value.trim();
-        let unit = unitInput.value.trim() || '斤';
-        let price = parseFloat(priceInput.value) || 0;
-
-        if (!name) {
-            alert('請輸入商品名稱！');
-            nameInput.focus();
-            return;
-        }
-
-        let db = getProductDB();
-        db[name] = { price: price, unit: unit };
-        localStorage.setItem('quotation_products_v6', JSON.stringify(db));
-
-        nameInput.value = '';
-        unitInput.value = '';
-        priceInput.value = '';
-
-        renderProductManager();
-        updateDatalist();
-        handleUserAction();
-    }
-
-    function updateMemoryData(name, field, value) {
-        let db = getProductDB();
-        if (db[name]) {
-            if (field === 'price') {
-                db[name].price = parseFloat(value) || 0;
-            } else {
-                db[name].unit = value.trim();
-            }
-            localStorage.setItem('quotation_products_v6', JSON.stringify(db));
-            updateDatalist();
-            handleUserAction();
-        }
-    }
-
-    function deleteMemoryItem(name) {
-        if (confirm(`確定要從商品管理中刪除「${name}」嗎？`)) {
-            let db = getProductDB();
-            delete db[name];
-            localStorage.setItem('quotation_products_v6', JSON.stringify(db));
-            
-            let clientPrices = getClientPricesDB();
-            for (let c in clientPrices) {
-                if (clientPrices[c][name]) delete clientPrices[c][name];
-            }
-            localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-
-            renderProductManager();
-            updateDatalist();
-            handleUserAction();
-        }
-    }
-
-    function renderClientPricingTable() {
-        let select = document.getElementById('selectedClientSelect');
-        let clientName = select ? select.value : '';
-        let tbody = document.getElementById('clientPricingTableBody');
-        tbody.innerHTML = '';
-
-        let db = getProductDB();
-        let clientPrices = getClientPricesDB();
-        let clientData = (clientName && clientPrices[clientName]) ? clientPrices[clientName] : {};
-
-        let hasCustomItems = false;
-        for (let productName in clientData) {
-            hasCustomItems = true;
-            let basePrice = db[productName] ? db[productName].price : '(商品已刪除)';
-            let customPrice = clientData[productName];
-
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${productName}</strong></td>
-                <td style="color: #666;">$${basePrice}</td>
-                <td><input type="number" value="${customPrice}" onchange="updateClientCustomPrice('${clientName}', '${productName}', this.value)"></td>
-                <td><button type="button" style="background:#d9534f; padding:3px 6px; font-size:12px;" onclick="deleteClientCustomPrice('${clientName}', '${productName}')">刪除</button></td>
-            `;
-            tbody.appendChild(tr);
-        }
-
-        if (!hasCustomItems) {
-            tbody.innerHTML = '<tr><td colspan="4" style="color:#888; padding: 15px;">此客戶目前尚無自定義專屬定價商品，請透過上方欄位新增</td></tr>';
-        }
-    }
-
-    function addCustomPriceForClient() {
-        let select = document.getElementById('selectedClientSelect');
-        let clientName = select ? select.value : '';
-        if (!clientName) {
-            alert('請先選擇客戶！');
-            return;
-        }
-
-        let nameInput = document.getElementById('newClientProdName');
-        let priceInput = document.getElementById('newClientProdPrice');
-        let prodName = nameInput.value.trim();
-        let price = parseFloat(priceInput.value);
-
-        if (!prodName) {
-            alert('請輸入或選取商品名稱！');
-            nameInput.focus();
-            return;
-        }
-        if (isNaN(price)) {
-            alert('請輸入有效的專屬單價！');
-            priceInput.focus();
-            return;
-        }
-
-        let clientPrices = getClientPricesDB();
-        if (!clientPrices[clientName]) {
-            clientPrices[clientName] = {};
-        }
-
-        clientPrices[clientName][prodName] = price;
-        localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-
-        nameInput.value = '';
-        priceInput.value = '';
-        renderClientPricingTable();
-        
-        let currentBuyer = document.getElementById('buyer').value.trim();
-        if (currentBuyer === clientName) {
-            onBuyerChange();
-        }
-
-        handleUserAction();
-        alert(`已成功新增「${clientName}」的 ${prodName} 專屬定價！`);
-    }
-
-    function updateClientCustomPrice(clientName, productName, value) {
-        let clientPrices = getClientPricesDB();
-        if (clientPrices[clientName]) {
-            if (value === '' || isNaN(value)) {
-                delete clientPrices[clientName][productName];
-            } else {
-                clientPrices[clientName][productName] = parseFloat(value);
-            }
-            localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-            
-            let currentBuyer = document.getElementById('buyer').value.trim();
-            if (currentBuyer === clientName) {
-                onBuyerChange();
-            }
-            handleUserAction();
-        }
-    }
-
-    function deleteClientCustomPrice(clientName, productName) {
-        if (confirm(`確定要刪除客戶「${clientName}」的專屬商品「${productName}」嗎？`)) {
-            let clientPrices = getClientPricesDB();
-            if (clientPrices[clientName] && clientPrices[clientName][productName] !== undefined) {
-                delete clientPrices[clientName][productName];
-                localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-                renderClientPricingTable();
-                
-                let currentBuyer = document.getElementById('buyer').value.trim();
-                if (currentBuyer === clientName) {
-                    onBuyerChange();
-                }
-                handleUserAction();
-            }
-        }
-    }
-
-    function deleteClientPricing() {
-        let select = document.getElementById('selectedClientSelect');
-        let clientName = select ? select.value : '';
-        if (!clientName) {
-            alert('請先選擇要清除的客戶！');
-            return;
-        }
-        if (confirm(`確定要清除客戶「${clientName}」的所有專屬定價紀錄嗎？`)) {
-            let clientPrices = getClientPricesDB();
-            if (clientPrices[clientName]) {
-                delete clientPrices[clientName];
-                localStorage.setItem('quotation_client_prices_v1', JSON.stringify(clientPrices));
-                renderClientPricingTable();
-                updateClientDatalist();
-                
-                let currentBuyer = document.getElementById('buyer').value.trim();
-                if (currentBuyer === clientName) {
-                    onBuyerChange();
-                }
-                handleUserAction();
-                alert(`已清除「${clientName}」的所有專屬定價。`);
-            }
-        }
-    }
-
-    window.onload = async function() {
-        updateUnitDatalist();
-        updateDatalist();
-        updateClientDatalist();
-
-        try {
-            let rememberedHandle = await loadHandleFromIDB();
-            if (rememberedHandle) {
-                globalFileHandle = rememberedHandle;
-                document.getElementById('reconnectBtn').style.display = 'inline-block';
-                document.getElementById('statusBar').style.backgroundColor = '#fcf8e3';
-                document.getElementById('statusBar').style.borderColor = '#faebcc';
-                document.getElementById('statusTitle').textContent = '尚未啟用本機自動存檔：';
-                document.getElementById('fileStatusText').innerHTML = `找到上次檔案 [<strong>${rememberedHandle.name}</strong>]，請點擊右側按鈕來「啟用自動存檔」！`;
-                document.getElementById('fileStatusText').style.color = '#8a6d3b';
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
-        let savedState = localStorage.getItem('quotation_current_state_v4');
-        if (savedState) {
-            let state = JSON.parse(savedState);
-            document.getElementById('buyer').value = state.buyer || '';
-            document.getElementById('invoiceNo').value = state.invoiceNo || '';
-            document.getElementById('invoiceDate').value = state.invoiceDate || '';
-            
-            if (state.items && state.items.length > 0) {
-                state.items.forEach(item => addRow(item));
-            } else {
-                defaultItems.forEach(item => addRow(item));
-            }
-        } else {
-            document.getElementById('invoiceNo').value = getNextInvoiceNo();
-            document.getElementById('invoiceDate').value = '115年 11月 4日';
-            defaultItems.forEach(item => addRow(item));
-        }
-        calculateGrandTotal();
-    };
-</script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/currency.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/invoice.js"></script>
+<script src="assets/js/catalog.js"></script>
+<script src="assets/js/clients.js"></script>
+<script src="assets/js/app.js"></script>
 
 </body>
 </html>
