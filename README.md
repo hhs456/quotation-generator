@@ -56,7 +56,9 @@ assets/js/app.js            datalist 同步、事件委派、啟動流程
 
 ## 版本
 
-目前 `v0.2.0`。各版本變更看 `git log` 或 tag 註解；需要對外發佈時用 GitHub Releases。
+目前 `v0.2.1`。各版本變更看 `git log` 或 tag 註解；需要對外發佈時用 GitHub Releases。
+
+版本語意：`v0.2.0` 是 MIT 授權的最後一個快照，自 `v0.2.1` 起改為 AGPL-3.0。兩版的程式碼行為相同，只差授權條款與原始檔標頭。
 
 ## 授權
 

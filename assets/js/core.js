@@ -23,7 +23,7 @@
    載入順序第 1 棒：不依賴其他檔。
    ========================================================================== */
 
-const APP_VERSION = '0.2.0';
+const APP_VERSION = '0.2.1';
 
 const STORAGE_KEYS = {
     products: 'quotation_products_v6',
