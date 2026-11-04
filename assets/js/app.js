@@ -1,3 +1,21 @@
+/*
+ * 大毛小毛火鍋料估價單產生器 — datalist 同步、事件綁定、啟動流程
+ * Copyright (C) 2026 Hanson
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 'use strict';
 
 /* ==========================================================================
@@ -72,7 +90,7 @@ function updateDatalist() {
     updateClientDatalist();
 }
 
-/* 買受人變更（离开焦點 / Enter）或按下重新套用按鈕時，才依專屬價重算全單價 */
+/* 買受人變更（離開焦點 / Enter）或按下重新套用按鈕時，才依專屬價重算全單價 */
 function onBuyerChange() {
     let buyer = getElementText('buyer').trim();
     document.querySelectorAll('#itemTableBody tr').forEach(tr => {
