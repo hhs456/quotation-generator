@@ -566,20 +566,21 @@ button:hover {
 }
 
 /* ============================ 熱感單據（10cm / 8cm） ============================ */
+/* 字級以 16px 為基底，其餘用 em，日後調整只改這一個數字。
+   店名（1.25em = 20px）刻意大於標題（1em = 16px）。 */
 .receipt {
     font-family: 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', Arial, sans-serif;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.4;
     color: #000;
 }
 .rc-shop {
     text-align: center;
-    font-size: 13px;
+    font-size: 1.25em;
     font-weight: bold;
 }
 .rc-title {
     text-align: center;
-    font-size: 16px;
     font-weight: bold;
     letter-spacing: 4px;
     margin: 2px 0 4px;
@@ -593,24 +594,111 @@ button:hover {
     justify-content: space-between;
     gap: 6px;
 }
+/* 16px 下文字列很容易超過可印寬（買受人＝姓名＋店家名稱，店名可自訂）。
+   標籤與值都可收縮，否則 flex 子項互不讓位會被印表機裁掉，而螢幕預覽看不出來。
+   報表的 receiptRow() 会把「買受人＋日期＋單號」這類動態內容放進 label 槽，
+   所以 label 不能一律設成不收縮。金額相反：折行會把數字切斷，所以恆不換行。 */
 .rc-label {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    min-width: 0;
 }
 .rc-value {
+    flex: 0 1 auto;
+    min-width: 0;
     text-align: right;
+}
+.rc-detail .rc-value,
+.rc-total .rc-value {
+    flex: 0 0 auto;
     white-space: nowrap;
 }
+/* 品名｜數量｜×單價｜金額 四欄，且各列欄位位置一致（像表格）。
+   兩層設計，缺一不可：
+   1. grid 放在 .rc-items（整塊），不是 .rc-item（單列）。軌道寬度是由該 grid 內
+      所有儲存格一起決定的——放在單列上時每列各自算各自的 max-content，
+      金額較長的列會把數量推向右，欄位就錯位了。
+   2. .rc-item 用 display: contents，讓它的子元素直接成為上層 grid 的儲存格。
+      不用 subgrid 是因為它需要 Chrome 117／Safari 16；不支援時
+      grid-template-columns: subgrid 整條被丟掉，子項會堆成多行，
+      壞得比「失去分頁保護」嚴重得多。display: contents 則是各處都支援。
+   用 grid 而非 flex＋flex-wrap：flex 的多列換行以 flex base size（max-content）
+   判線，長品名會獨佔第一列，把數值欄推到下一列，正好和「同一列」的需求相反。 */
+.rc-items {
+    display: grid;
+    /* 第 1 軌的下限 3em 是必須的：沒有下限時三個數值欄會把品名軌壓到 0px，
+       長品名變成一行一字的階梯，一張單能吃掉 20 幾公分紙。
+       三個數值欄一律 fit-content(上限) 而不是 auto：共用 grid 後欄寬由全壘最寬的
+       那筆決定，一筆千萬級的金額會把**每一列**的品名欄擠掉三分之一，
+       正常的單被一顆異常值拖下水。封頂後異常值改在自己格內折行，其餘各列不受牽連。
+       也必須用 fit-content() 而不是 minmax(0, Nem)：後者的 growth limit 是 Nem，
+       grid 在分配 1fr 之前會先把空閒空間灌進去，結果等於**固定** Nem，
+       正常單據明明只要 41px 的金額欄也會被佔掉 96px，品名欄平白窄了四分之一。
+       fit-content(Nem) = minmax(auto, min(Nem, max-content))，用量而設、不超頂。
+       上限要**寬於任何正常數字**，因為 fit-content 已經只取所需，設窄了省不到空間，
+       只會讓正常列無謂折行。前一版設 3em／3.5em／5em 就是踩到這個坑：
+       那是用「最大 128 箱、單價 500」的資料掃瞄出來的，實測一張
+       「1500 支 × 9650 ＝ 14,475,000」的正常批發單，數量欄差 4px 裝不下而折行，
+       金額欄也跟著折成兩行。五金批發出現四位數數量、七位數單價是日常，
+       所以三個上限都拉到收容得了它們為止（6em＝96px 可容 6 位數＋單位、
+       5.5em＝88px 可容 × 加 7 位數、6.5em＝104px 可容 10 位數含千分位）。
+       再大就真的會擠到品名欄，所以到此為止。 */
+    grid-template-columns: minmax(3em, 1fr) fit-content(6em) fit-content(5.5em) fit-content(6.5em);
+    align-items: baseline;
+    column-gap: 6px;
+    /* 原本 .rc-item 的 margin: 3px 0。改 display: contents 後該元素沒有盒子，
+       margin 無效，間距一律由 gap 提供（備註行也因此多 3px，節奏一致）。 */
+    row-gap: 3px;
+}
 .rc-item {
-    margin: 3px 0;
+    display: contents;
+}
+/* 無品項提示要橫跨整寬，否則只會佔第 1 軌而偏左 */
+.rc-items > .rc-empty {
+    grid-column: 1 / -1;
 }
 .rc-item-name {
+    grid-column: 1;
     font-weight: bold;
+    /* 中文字與帶連字號的型號本來就會換行，但純英數長 token（條碼字串、
+       SKU 序號）沒有任何斷點。缺這條時它會直線畫過去，蓋掉同列的數值欄，
+       再超出可印寬被印表機裁掉——改版前品名獨佔一列，最多只裁自己，不會傷到金額。 */
+    overflow-wrap: break-word;
 }
+/* 數量與單價各自一欄、恆靠右，數字才直向對得起來。
+   兩個欄位都要顯式定位：報表的品項彙整列沒有單價（price 留空），
+   少一個子項時 auto placement 會把金額往前拉一格，整張表的金額欄就错位了。 */
+.rc-item-qty {
+    grid-column: 2;
+    text-align: right;
+    overflow-wrap: break-word;
+}
+.rc-item-price {
+    grid-column: 3;
+    text-align: right;
+    overflow-wrap: break-word;
+}
+.rc-item .rc-value {
+    grid-column: 4;
+    /* 只在第 4 軌封頂後真的裝不下時才折行，斷點落在千分位逗號後
+       （逗號是 CSS 的換行機會），所以折出來是「1,279,999,」／「872」這種
+       還能唸的樣子，不會從數字中間切斷。
+       這與 .rc-total／.rc-detail 的恆 nowrap 不同：那兩列是整張單唯一的金額，
+       沒有別的欄位可以被它拖累，寧可溢出也不能折。 */
+    overflow-wrap: break-word;
+    text-align: right;
+    /* 拉開單價與金額的距離，讓兩個靠右的數字欄不會看成一個長數字。
+       用 padding 而非加大 column-gap：gap 會連品名與數量之間一起撐寬，
+       8cm 的 76mm 沒那麼多空間可給。金額恆右對齊，padding 撐的是格子左側的空白，
+       右緣仍貼齊可印區。 */
+    padding-left: 8px;
+}
+/* 橫跨全部軌掉到下一列。仍是 .rc-item 的子元素，語意上屬於同一個品項 */
 .rc-remark {
-    font-size: 11px;
+    grid-column: 1 / -1;
+    font-size: 0.917em;
 }
 .rc-note {
-    font-size: 11px;
+    font-size: 0.917em;
     line-height: 1.35;
     margin-top: 4px;
 }
@@ -620,18 +708,30 @@ button:hover {
 }
 .rc-total {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 1.167em;
+}
+/* 買受人與合計同級（1.167em 粗體）。刻意不加 nowrap：買受人是姓名＋店家名稱，
+   18.7px 下更容易超寬，必須能換行，否則會被印表機裁掉。
+   標籤則釘死不收縮——18.7px 的「買受人」一旦被壓窄會折成「買受／人」，
+   比值換行更難看。只有這一列的標籤是固定字串，報表的 label 槽是動態內容，
+   所以不能把例外寫進 .rc-label 本身。 */
+.rc-buyer {
+    font-weight: bold;
+    font-size: 1.167em;
+}
+.rc-buyer .rc-label {
+    flex: 0 0 auto;
 }
 .rc-cn {
     text-align: right;
-    font-size: 11px;
+    font-size: 0.917em;
 }
 .rc-empty {
     text-align: center;
 }
 .rc-sign {
     margin-top: 10px;
-    font-size: 11px;
+    font-size: 0.917em;
 }
 
 /* 列印輸出容器：畫面上恆隱藏 */
@@ -645,9 +745,6 @@ button:hover {
     }
     body.printing-doc #printDoc {
         display: block;
-    }
-    .print-thermal {
-        font-size: 12px;
     }
     .report {
         font-size: 13px;
@@ -666,7 +763,10 @@ button:hover {
     .rp-table thead {
         display: table-header-group;
     }
-    .rp-table tr, .rc-item {
+    /* .rc-item 是 display: contents，沒有盒子，對它下 page-break-inside 不會生效，
+       所以從這條規則移除，不留一條騙人的 CSS。熱感紙是 @page size: 100mm auto
+       （連續紙、高度不定），本來也不會分頁；A4 那條路徑不走 .rc-item。 */
+    .rp-table tr {
         page-break-inside: avoid;
     }
     .rp-total {

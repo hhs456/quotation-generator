@@ -26,9 +26,33 @@
 
 let lastReport = null;
 
-function getReportClient() {
+/* 「全部客戶」不佔用 <option> 的 value 空間：value 留空、另掛 data-all="1"。
+   買受人是使用者自由輸入的文字，也會從 JSON 快照原樣讀進來，任何拿它當哨兵
+   的寫法都可能被一位真實客戶（或一份被編輯過的檔案）精確撞上。 */
+const ALL_CLIENTS_LABEL = '全部客戶';
+
+function isAllClientsReport(report) {
+    return !!report && report.allClients === true;
+}
+
+function reportClientLabel(report) {
+    return isAllClientsReport(report) ? ALL_CLIENTS_LABEL : String(report.clientName || '').trim() || '（未選擇）';
+}
+
+/* 空報表文案。A4 與熱感共用這一句，兩版才不會各說各話（README 的承諾）。 */
+function reportEmptyText(report) {
+    return isAllClientsReport(report)
+        ? '期間內查無任何客戶的單據。'
+        : '期間內查無客戶「' + reportClientLabel(report) + '」的單據。';
+}
+
+/* 目前選的是誰。回傳描述子而非字串，才分得開「沒選」與「選全部」。 */
+function getReportSelection() {
     let select = document.getElementById('reportClientSelect');
-    return select ? String(select.value || '').trim() : '';
+    let opt = select ? select.options[select.selectedIndex] : null;
+    if (!opt) return { allClients: false, clientName: '' };
+    if (opt.dataset.all === '1') return { allClients: true, clientName: '' };
+    return { allClients: false, clientName: String(opt.value || '').trim() };
 }
 
 /* 名單：正式客戶 ∪ 歷史單據出現過的買受人（手打的客戶也要查得到） */
@@ -63,7 +87,8 @@ function formatQty(qty) {
     return String(Math.round(qty * 1000) / 1000);
 }
 
-function computeCustomerReport(clientName, from, to) {
+function computeCustomerReport(clientName, from, to, allClientsFlag) {
+    let allClients = allClientsFlag === true;
     let invoices = [];
     let undated = [];
     let seenInvoiceNos = new Set();
@@ -74,16 +99,18 @@ function computeCustomerReport(clientName, from, to) {
         if (!rec || typeof rec !== 'object') return;
         let data = rec.data && typeof rec.data === 'object' ? rec.data : {};
         let buyer = String(rec.buyer || data.buyer || '').trim();
-        if (buyer !== clientName) return;
+        if (!allClients && buyer !== clientName) return;
 
         /* 同一張單被存兩次（連按兩下、或載入後重存）只能算一次業績。
            歷史列表是新單在前，所以保留先出現的那一筆；沒有單號的紀錄各自成單，不去重。
+           去重鍵一定要帶買受人：單號是各客戶自行編號的流水號，不分客戶統計時
+           兩位客戶都可能有「1」號單，只以單號為鍵會把兩張不同的單合併掉。
            注意 saveToHistory() 把空單號寫成 NO_INVOICE_NO 哨兵值，所以 rec.invoiceNo
            恆非空——必須先還原成空字串，否則同一客戶的所有空單號單據會共用
            同一個哨兵鍵被合併掉，從各段彙整靜默消失。 */
         let invoiceNo = String(rec.invoiceNo || data.invoiceNo || '').trim();
         if (invoiceNo === NO_INVOICE_NO) invoiceNo = '';
-        let dedupeKey = invoiceNo || '\u0000anon:' + (++anonymousSeq);
+        let dedupeKey = buyer + '\u0000' + (invoiceNo || '\u0000anon:' + (++anonymousSeq));
         if (seenInvoiceNos.has(dedupeKey)) {
             duplicated++;
             return;
@@ -94,6 +121,7 @@ function computeCustomerReport(clientName, from, to) {
         let date = parseDateLabel(dateLabel);
         if (!date) {
             undated.push({
+                buyer: buyer,
                 invoiceNo: invoiceNo || NO_INVOICE_NO,
                 dateLabel: dateLabel || '未填日期'
             });
@@ -118,13 +146,16 @@ function computeCustomerReport(clientName, from, to) {
         });
         invoices.push({
             date: date,
+            buyer: buyer,
             invoiceNo: invoiceNo || NO_INVOICE_NO,
             lines: lines,
             amount: lines.reduce((sum, line) => sum + line.amount, 0)
         });
     });
 
-    invoices.sort((a, b) => (a.date - b.date) || a.invoiceNo.localeCompare(b.invoiceNo));
+    invoices.sort((a, b) => (a.date - b.date) ||
+        (allClients ? a.buyer.localeCompare(b.buyer, 'zh-Hant') : 0) ||
+        a.invoiceNo.localeCompare(b.invoiceNo));
 
     let lineMap = new Map();
     let monthMap = new Map();
@@ -157,6 +188,7 @@ function computeCustomerReport(clientName, from, to) {
 
     return {
         clientName: clientName,
+        allClients: allClients,
         from: from,
         to: to,
         invoices: invoices,
@@ -172,6 +204,8 @@ function reportPeriodText(report) {
     if (!report.from && !report.to) return '全部期間';
     if (report.from && !report.to) return rocDateLabel(report.from) + ' 起';
     if (!report.from && report.to) return '直至 ' + rocDateLabel(report.to);
+    /* 今日快捷把起訖日設成同一天，印成「115年11月05日 ～ 115年11月05日」很囉嗦 */
+    if (report.from.getTime() === report.to.getTime()) return rocDateLabel(report.from);
     return rocDateLabel(report.from) + ' ～ ' + rocDateLabel(report.to);
 }
 
@@ -183,9 +217,12 @@ function reportPeriodText(report) {
  * 回傳純字串陣列，A4 包成 .rp-note，熱感包成列，兩邊文案同一份。
  */
 function reportNotes(report) {
+    let allClients = isAllClientsReport(report);
     let notes = [];
     if (report.undated.length > 0) {
-        let preview = report.undated.slice(0, 5).map(rec => `${rec.invoiceNo}（${rec.dateLabel}）`).join('、');
+        let preview = report.undated.slice(0, 5)
+            .map(rec => `${allClients && rec.buyer ? rec.buyer + ' ' : ''}${rec.invoiceNo}（${rec.dateLabel}）`)
+            .join('、');
         let more = report.undated.length > 5 ? `…等 ${report.undated.length} 張` : '';
         notes.push(`另有 ${report.undated.length} 張單據的日期無法判定（格式不是「民國○○年 ○月 ○日」這類可解析的寫法），未計入本期間：${preview}${more}`);
     }
@@ -209,14 +246,14 @@ function buildReportA4Html(report) {
         (shop ? `<div class="rp-shop">${esc(shop)}</div>` : '') +
         '<div class="rp-title">客戶購貨統計</div>' +
         '<div class="rp-meta">' +
-        `<div>客戶：<strong>${esc(report.clientName || '（未選擇）')}</strong></div>` +
+        `<div>客戶：<strong>${esc(reportClientLabel(report))}</strong></div>` +
         `<div>期間：${esc(reportPeriodText(report))}</div>` +
         `<div>單據數：${report.invoices.length}</div>` +
         `<div>產出日期：${esc(rocDate())}</div>` +
         '</div>';
 
     if (report.invoices.length === 0) {
-        html += `<div class="rp-empty">期間內查無客戶「${esc(report.clientName)}」的單據。</div>` + reportNotesHtml(report);
+        html += `<div class="rp-empty">${esc(reportEmptyText(report))}</div>` + reportNotesHtml(report);
         return html + '</div>';
     }
 
@@ -240,12 +277,15 @@ function buildReportA4Html(report) {
         ).join('') +
         '</tbody></table>';
 
+    let allClients = isAllClientsReport(report);
     html += '<h4 class="rp-section">三、單據明細</h4>' +
         '<table class="rp-table rp-table-invoices"><thead><tr>' +
-        '<th>日期</th><th>單號</th><th>品項數</th><th>金額</th>' +
+        '<th>日期</th>' + (allClients ? '<th>客戶</th>' : '') + '<th>單號</th><th>品項數</th><th>金額</th>' +
         '</tr></thead><tbody>' +
         report.invoices.map(inv =>
-            `<tr><td>${esc(rocDateLabel(inv.date))}</td><td>${esc(inv.invoiceNo)}</td>` +
+            `<tr><td>${esc(rocDateLabel(inv.date))}</td>` +
+            (allClients ? `<td class="rp-name">${esc(inv.buyer)}</td>` : '') +
+            `<td>${esc(inv.invoiceNo)}</td>` +
             `<td>${inv.lines.length}</td><td class="rp-num">${formatMoney(inv.amount)}</td></tr>`
         ).join('') +
         '</tbody></table>';
@@ -263,17 +303,18 @@ function buildReportA4Html(report) {
 
 function buildReportThermalHtml(report) {
     let shop = getShopName();
+    let allClients = isAllClientsReport(report);
     let html = '<div class="receipt">' +
         (shop ? `<div class="rc-shop">${esc(shop)}</div>` : '') +
         '<div class="rc-title">客戶購貨統計</div>' +
         '<div class="rc-rule"></div>' +
-        receiptRow('客戶', report.clientName || '（未選擇）') +
+        receiptRow('客戶', reportClientLabel(report)) +
         receiptRow('期間', reportPeriodText(report)) +
         receiptRow('單據數', String(report.invoices.length)) +
         '<div class="rc-rule"></div>';
 
     if (report.invoices.length === 0) {
-        html += '<div class="rc-empty">期間內查無此客戶的單據。</div>' + reportNotesThermalHtml(report);
+        html += `<div class="rc-empty">${esc(reportEmptyText(report))}</div>` + reportNotesThermalHtml(report);
         return html + '</div>';
     }
 
@@ -284,7 +325,9 @@ function buildReportThermalHtml(report) {
         });
     }
 
-    html += '<div class="rc-section">品項</div>';
+    /* 包進 .rc-items：品項列要共用同一個 grid，欄位才會像表格那樣對齊。
+       直接攤在 .receipt 下時每列各自成 grid，金額長度會推擠數量欄。 */
+    html += '<div class="rc-section">品項</div><div class="rc-items">';
     report.lines.forEach(line => {
         /* 與收據共用 receiptItem()：同一套 escape、同一個金額格式。
            彙整列沒有單一單價，price 留空即不會印「× 單價」。 */
@@ -296,10 +339,13 @@ function buildReportThermalHtml(report) {
             amount: line.amount
         });
     });
+    html += '</div>';
 
     html += '<div class="rc-section">單據</div>';
     report.invoices.forEach(inv => {
-        html += receiptRow(rocDateLabel(inv.date) + ' ' + inv.invoiceNo, formatMoney(inv.amount), 'rc-detail');
+        let label = (allClients && inv.buyer ? inv.buyer + ' ' : '') +
+            rocDateLabel(inv.date) + ' ' + inv.invoiceNo;
+        html += receiptRow(label, formatMoney(inv.amount), 'rc-detail');
     });
 
     html += '<div class="rc-rule"></div>' +
@@ -318,16 +364,22 @@ function buildReportHtml(report, thermal) {
 function renderReportClientOptions() {
     let select = document.getElementById('reportClientSelect');
     if (!select) return;
-    let previous = select.value;
+    let previous = getReportSelection();
     let clients = getReportClients();
     select.innerHTML = '';
+    let allOpt = document.createElement('option');
+    allOpt.value = '';
+    allOpt.dataset.all = '1';
+    allOpt.textContent = ALL_CLIENTS_LABEL + '（不分客戶）';
+    select.appendChild(allOpt);
     clients.forEach(name => {
         let opt = document.createElement('option');
         opt.value = name;
         opt.textContent = name;
         select.appendChild(opt);
     });
-    if (clients.indexOf(previous) !== -1) select.value = previous;
+    if (previous.allClients) select.selectedIndex = 0;
+    else if (previous.clientName && clients.indexOf(previous.clientName) !== -1) select.value = previous.clientName;
 }
 
 function markReportPreset(kind) {
@@ -340,7 +392,10 @@ function applyReportPreset(kind) {
     let now = new Date();
     let from = null;
     let to = null;
-    if (kind === 'month') {
+    if (kind === 'today') {
+        /* 中午 12 點：與 parseISODateInput() 同一套約定，起訖日同一天才比得準 */
+        from = to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0, 0);
+    } else if (kind === 'month') {
         from = firstDayOfMonth(now);
         to = lastDayOfMonth(now);
     } else if (kind === 'prevMonth') {
@@ -368,8 +423,14 @@ function renderReport() {
     let printBtn = document.getElementById('printReportBtn');
     if (!box) return;
 
-    let client = getReportClient();
-    if (!client) {
+    let sel = getReportSelection();
+    /* 有無資料要分開問：全部客戶看歷史單據，單一客戶看名單。兩者母集不同——
+       買受人為純空白的單據會進歷史列表卻不進名單（getReportClients 濾掉空字串），
+       拿名單判斷全部客戶會把已儲存的單據整套無聲吞掉，還叫使用者去存已經存過的單。 */
+    let noData = sel.allClients
+        ? getHistoryList().length === 0
+        : (!sel.clientName || getReportClients().length === 0);
+    if (noData) {
         lastReport = null;
         box.innerHTML = '<p class="empty-row-hint">目前沒有可統計的客戶。請先儲存單據（💾 儲存單據）或在「👥 客戶管理」建立客戶。</p>';
         if (printBtn) printBtn.disabled = true;
@@ -377,7 +438,7 @@ function renderReport() {
     }
 
     let range = getReportRange();
-    lastReport = computeCustomerReport(client, range.from, range.to);
+    lastReport = computeCustomerReport(sel.clientName, range.from, range.to, sel.allClients);
     let preset = getPaperPreset();
     if (preset.thermal) {
         /* 螢幕預覽直接照熱感紙的寬度畫，所見即所印 */
@@ -399,10 +460,10 @@ function openReportModal() {
     let select = document.getElementById('reportClientSelect');
     let buyer = getElementText('buyer').trim();
     if (select && buyer) {
-        let matched = Array.from(select.options).some(opt => opt.value === buyer);
+        let matched = Array.from(select.options).some(opt => opt.dataset.all !== '1' && opt.value === buyer);
         if (matched) select.value = buyer;
     }
-    applyReportPreset('month');
+    applyReportPreset('today');
     document.getElementById('reportModal').style.display = 'flex';
 }
 

@@ -24,7 +24,7 @@
    DEFAULT_UNITS / DEFAULT_PRODUCTS / SEQ_BASE 在那一支宣告，本檔不重複宣告）。
    ========================================================================== */
 
-const APP_VERSION = '0.3.0';
+const APP_VERSION = '0.4.0';
 
 const STORAGE_KEYS = {
     products: 'quotation_products_v6',

@@ -229,7 +229,7 @@
 <div id="reportModal" class="modal no-print">
     <div class="modal-content modal-content-report">
         <h3>📊 客戶購貨統計</h3>
-        <p class="hint-text">統計來源為「歷史單據」（需先按 💾 儲存單據）。預設為本月，可改用快捷期間或自訂起訖日。</p>
+        <p class="hint-text">統計來源為「歷史單據」（需先按 💾 儲存單據）。預設為今日，可改用快捷期間或自訂起訖日；客戶選「全部客戶」則不分客戶彙整。</p>
 
         <div class="report-controls">
             <div class="flex-row">
@@ -248,6 +248,7 @@
                 <span class="hint-text">影響下方預覽與「列印報表」的版型</span>
             </div>
             <div id="reportPresets" class="flex-wrap-gap">
+                <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="today">今日</button>
                 <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="month">本月</button>
                 <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="prevMonth">上月</button>
                 <button type="button" class="btn-sm btn-neutral" data-action="report-preset" data-preset="quarter">本季</button>

@@ -188,11 +188,13 @@ function receiptRow(label, value, extraClass) {
 }
 
 function receiptItem(item) {
-    let detail = [item.qty, item.unit].filter(part => part !== '' && part !== undefined && part !== null).join(' ');
-    if (item.price !== '' && item.price !== undefined && item.price !== null) detail += ' × ' + item.price;
+    let qty = [item.qty, item.unit].filter(part => part !== '' && part !== undefined && part !== null).join(' ');
+    let hasPrice = item.price !== '' && item.price !== undefined && item.price !== null;
     let html = `<div class="rc-item">` +
-        `<div class="rc-item-name">${esc(item.name)}</div>` +
-        receiptRow(detail, item.amount === '' ? '—' : formatMoney(item.amount), 'rc-detail');
+        `<span class="rc-item-name">${esc(item.name)}</span>` +
+        (qty ? `<span class="rc-item-qty">${esc(qty)}</span>` : '') +
+        (hasPrice ? `<span class="rc-item-price">× ${esc(item.price)}</span>` : '') +
+        `<span class="rc-value">${item.amount === '' ? '—' : formatMoney(item.amount)}</span>`;
     if (item.remark) html += `<div class="rc-remark">備註 ${esc(item.remark)}</div>`;
     html += '</div>';
     return html;
@@ -244,7 +246,7 @@ function buildInvoiceThermalHtml(state) {
         '<div class="rc-rule"></div>' +
         receiptRow('單號', state.invoiceNo || '') +
         receiptRow('日期', state.invoiceDate || '') +
-        receiptRow('買受人', buyer) +
+        receiptRow('買受人', buyer, 'rc-buyer') +
         '<div class="rc-rule"></div>' +
         '<div class="rc-items">' +
         (items.length > 0 ? items.map(receiptItem).join('') : '<div class="rc-empty">無品項</div>') +
